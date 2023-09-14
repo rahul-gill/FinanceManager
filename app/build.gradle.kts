@@ -77,6 +77,11 @@ dependencies {
         implementation(core)
         ksp(ksp)
     }
+
+    with(libs.multiplatform.settings){
+        implementation(no.arg)
+        implementation(coroutines)
+    }
 }
 
 detekt {

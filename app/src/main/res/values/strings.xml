@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Finance Manager</string>
+    <string name="all_time">All time</string>
+    <string name="custom">Custom</string>
+    <string name="daily">Daily</string>
+    <string name="monthly">Monthly</string>
+    <string name="weekly">Weekly</string>
+    <string name="yearly">Yearly</string>
+    <string name="home">Home</string>
+    <string name="budget">Budget</string>
+    <string name="stats">Stats</string>
+    <string name="more">More</string>
 </resources>

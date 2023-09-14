@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.gill.rahul.financemanager.R
+import io.github.gill.rahul.financemanager.StringResources
 import io.github.gill.rahul.financemanager.ui.theme.FinanceManagerTheme
 import java.time.LocalDate
 
@@ -35,12 +37,13 @@ sealed class DateRangeType {
 
     fun formatWithStartDate(startDate: LocalDate = LocalDate.now()): String {
         return when (this) {
-            All -> "TODO()"
-            is Custom -> "TODO()"
-            Daily -> "TODO()"
-            Monthly -> "TODO()"
-            Weekly -> "TODO()"
-            Yearly -> "TODO()"
+            //TODO
+            All -> StringResources.get(R.string.all_time)
+            is Custom -> StringResources.get(R.string.all_time)
+            Daily -> StringResources.get(R.string.all_time)
+            Monthly -> StringResources.get(R.string.all_time)
+            Weekly -> StringResources.get(R.string.all_time)
+            Yearly -> StringResources.get(R.string.all_time)
         }
     }
 
@@ -68,14 +71,16 @@ sealed class DateRangeType {
     }
 
     fun typeName(): String {
-        return when (this) {
-            All -> "TODO()"
-            is Custom -> "TODO()"
-            Daily -> "TODO()"
-            Monthly -> "TODO()"
-            Weekly -> "TODO()"
-            Yearly -> "TODO()"
-        }
+        return StringResources.get(
+            when (this) {
+                All -> R.string.all_time
+                is Custom -> R.string.custom
+                Daily -> R.string.daily
+                Monthly -> R.string.monthly
+                Weekly -> R.string.weekly
+                Yearly -> R.string.yearly
+            }
+        )
     }
 }
 
