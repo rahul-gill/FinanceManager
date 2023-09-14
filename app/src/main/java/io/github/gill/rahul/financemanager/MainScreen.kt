@@ -1,5 +1,7 @@
 package io.github.gill.rahul.financemanager
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -7,24 +9,32 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 @RootNavGraph(start = true)
 @Destination
 @Composable
-fun HomeScreen(){
-
+fun HomeScreen() {
+    Column {
+        Text(text = "")
+    }
 }
 
 @Destination
 @Composable
-fun BudgetScreen(){
-
+fun BudgetScreen() {
+    Column {
+        Text(text = "")
+    }
 }
 
 @Destination
 @Composable
-fun StatsScreen(){
-
+fun StatsScreen() {
+    Column {
+        Text(text = "")
+    }
 }
 
 @Destination
 @Composable
-fun MoreSettingsScreen(){
-
+fun MoreSettingsScreen() {
+    Column {
+        Text(text = "")
+    }
 }

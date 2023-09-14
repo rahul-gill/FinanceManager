@@ -13,9 +13,14 @@ compose-bom = "2023.09.00"
 detekt = "1.23.1"
 compose-destination = "1.9.53"
 multiplatform-settings = "1.0.0"
+sqldelight = "2.0.0"
+twitter-detekt = "0.0.26"
 
 
 [libraries]
+detekt-compose-rules = { module = "com.twitter.compose.rules:detekt", version.ref = "twitter-detekt" }
+sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-primitive-adapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 desugar-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar-libs" }
@@ -41,3 +46,4 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
