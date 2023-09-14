@@ -10,4 +10,5 @@
     <string name="budget">Budget</string>
     <string name="stats">Stats</string>
     <string name="more">More</string>
+    <string name="format_year">yyyy</string>
 </resources>

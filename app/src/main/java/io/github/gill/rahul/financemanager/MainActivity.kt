@@ -23,11 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.rememberNavController
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.navigation.navigate
-import io.github.gill.rahul.financemanager.destinations.BudgetScreenDestination
 import io.github.gill.rahul.financemanager.destinations.Destination
-import io.github.gill.rahul.financemanager.destinations.HomeScreenDestination
-import io.github.gill.rahul.financemanager.destinations.MoreSettingsScreenDestination
-import io.github.gill.rahul.financemanager.destinations.StatsScreenDestination
 import io.github.gill.rahul.financemanager.ui.nav.BottomBarDestination
 import io.github.gill.rahul.financemanager.ui.theme.FinanceManagerTheme
 
@@ -59,7 +55,6 @@ class MainActivity : ComponentActivity() {
                                 enter = slideInVertically { it },
                                 exit = slideOutVertically { it }
                             ) {
-
                                 NavigationBar {
                                     BottomBarDestination.entries.forEach { destination ->
                                         NavigationBarItem(

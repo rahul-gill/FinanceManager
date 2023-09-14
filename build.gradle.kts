@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.kotlinAndroid) apply false
@@ -6,24 +8,25 @@ plugins {
 }
 
 detekt {
+    basePath = rootProject.projectDir.absolutePath
     parallel = true
-    config.setFrom("${projectDir.absolutePath}/config/detekt.yml")
+    config.setFrom("$rootDir/config/detekt.yml")
     buildUponDefaultConfig = true
     allRules = false
+    source.setFrom(projectDir)
     // baseline = file("path/to/baseline.xml")
-    basePath = projectDir.absolutePath
 }
 
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+tasks.withType<Detekt>().configureEach {
+    exclude("**/build/**")
     reports {
         xml.required.set(false)
         txt.required.set(false)
         html.required.set(true)
-        html.outputLocation.set(file("build/reports/detekt.html"))
         sarif.required.set(true)
+        html.outputLocation.set(file("build/reports/detekt.html"))
         sarif.outputLocation.set(file("build/reports/detekt.sarif"))
     }
-    basePath = projectDir.absolutePath
 }
 
 dependencies {

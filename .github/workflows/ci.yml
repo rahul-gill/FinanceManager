@@ -101,6 +101,8 @@ jobs:
           path: app/build/reports/androidTests/connected/**
 
   detekt:
+    permissions:
+      security-events: write   # To upload sarif files
     runs-on: ubuntu-latest
     env:
       GRADLE_OPTS: -Dorg.gradle.daemon=false
@@ -117,6 +119,10 @@ jobs:
 
       - name: Run detekt
         run: ./gradlew detekt
+
+      - name: Check if output sarif is generated
+        if: success() || failure()
+        run: ls build/reports
 
       # Make sure we always run this upload task,
       # because the previous step may fail if there are findings.

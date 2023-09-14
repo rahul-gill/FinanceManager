@@ -82,14 +82,12 @@ dependencies {
         implementation(coroutines)
     }
 
-    with(libs.sqldelight){
+    with(libs.sqldelight) {
         implementation(android.driver)
         implementation(primitive.adapters)
-
     }
+
 }
-
-
 
 sqldelight {
     databases {
