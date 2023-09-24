@@ -1,0 +1,174 @@
+import io.github.gill.rahul.financemanager.db.TransactionType;
+import java.time.LocalDateTime;
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS Accounts (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    startingBalance INTEGER NOT NULL,
+    currentBalance INTEGER NOT NULL,
+    includeInTotalBalance INTEGER AS Boolean NOT NULL,
+    uiPropertiesId INTEGER NOT NULL,
+    FOREIGN KEY (uiPropertiesId) REFERENCES UiProperties(id)
+);
+
+CREATE TABLE IF NOT EXISTS Transactions (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    accountId INTEGER NOT NULL,
+    type TEXT AS TransactionType NOT NULL,
+    categoryId INTEGER  NOT NULL,
+    amount INTEGER NOT NULL,
+    title TEXT,
+    description TEXT,
+    dateTime TEXT AS LocalDateTime NOT NULL,
+    dueDateTime TEXT AS LocalDateTime,
+    FOREIGN KEY (accountId) REFERENCES Accounts(id),
+    FOREIGN KEY (categoryId) REFERENCES Categories(id)
+);
+
+CREATE TABLE IF NOT EXISTS Categories (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    uiPropertiesId INTEGER NOT NULL,
+    FOREIGN KEY (uiPropertiesId) REFERENCES UiProperties(id)
+);
+
+CREATE TABLE IF NOT EXISTS UiProperties(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    color INTEGER NOT NULL,
+    icon TEXT NOT NULL,
+    orderNum REAL NOT NULL
+);
+
+-- Accounts Queries
+createAccout:
+INSERT INTO Accounts (name, uiPropertiesId, startingBalance, currentBalance, includeInTotalBalance)
+VALUES (:name, :uiPropertiesId, :startingBalance, :startingBalance, :includeInTotalBalance);
+
+getAccountById:
+SELECT
+    A.id AS accountId,
+    A.name AS accountName,
+    A.startingBalance,
+    A.currentBalance,
+    A.includeInTotalBalance,
+    A.uiPropertiesId,
+    UP.color,
+    UP.icon,
+    UP.orderNum
+FROM Accounts AS A JOIN UiProperties AS UP ON A.uiPropertiesId = UP.id
+WHERE A.id = :accountId;
+
+getAllAccounts:
+SELECT
+    A.id AS accountId,
+    A.name AS accountName,
+    A.startingBalance,
+    A.currentBalance,
+    A.includeInTotalBalance,
+    A.uiPropertiesId,
+    UP.color,
+    UP.icon,
+    UP.orderNum
+FROM Accounts AS A JOIN UiProperties AS UP ON A.uiPropertiesId = UP.id;
+
+deleteAccount:
+DELETE FROM Accounts WHERE Accounts.id = :accountId;
+
+updateAccountName:
+UPDATE Accounts
+SET name = :updatedName
+WHERE id = :accountId;
+
+updateAccountIncludedInBalance:
+UPDATE Accounts
+SET includeInTotalBalance = :included
+WHERE id = :accountId;
+
+updateAccountUiDetails:
+UPDATE UiProperties
+SET color = :color,
+    icon = :icon,
+    orderNum = :orderNum
+WHERE UiProperties.id = (SELECT uiPropertiesId FROM Accounts WHERE Accounts.id = :accountId);
+
+updateAccountStartingBalance:
+UPDATE Accounts
+SET startingBalance = :startingBalance,
+    currentBalance = currentBalance + :startingBalance - startingBalance
+WHERE id = :accountId;
+
+-- Transactions queries
+createTransaction:
+INSERT INTO Transactions (
+    accountId, type, categoryId, title, description, dateTime, dueDateTime, amount
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+getTransactionById:
+SELECT * FROM Transactions WHERE id = :transactionId;
+
+getAllTransactions:
+SELECT * FROM Transactions;
+
+deleteTransaction:
+DELETE FROM Transactions WHERE id = :transactionId;
+
+updateTransaction:
+UPDATE Transactions
+SET accountId = :updatedAccountID,
+    type = :updatedType,
+    categoryId = :updatedCategoryId,
+    title = :updatedTitle,
+    description = :updatedDescription,
+    dateTime = :updatedDateTime,
+    dueDateTime = :updatedDueDateTime
+WHERE id = :transctionID;
+
+-- Categories queries
+creatCategory:
+INSERT INTO Categories (name, uiPropertiesId)
+VALUES (?, ?);
+
+getCategoryById:
+SELECT * FROM Categories WHERE id = :categoryId;
+
+getAllCategories:
+SELECT * FROM Categories;
+
+deletCategory:
+DELETE FROM Categories WHERE id = :categoryId;
+
+updateCategoryName:
+UPDATE Categories
+SET name = :updatedName
+WHERE id = :categoryId;
+
+
+updateCategoryUiDetails:
+UPDATE UiProperties
+SET color = :color,
+    icon = :icon,
+    orderNum = :orderNum
+WHERE UiProperties.id = (SELECT uiPropertiesId FROM Categories WHERE Categories.id = :categoryId);
+
+
+-- UiProperty properties
+
+createUiProperty:
+INSERT INTO UiProperties (color, icon, orderNum)
+VALUES (?, ?, ?);
+
+getUiPropertyById:
+SELECT * FROM UiProperties WHERE id = :uiPropertyId;
+
+deleteUiPropertyById:
+DELETE FROM UiProperties WHERE id = :uiPropertyId;
+
+updateUiProperty:
+UPDATE UiProperties
+SET color = :updatedColor, icon = :updatedIcon, orderNum = :updatedOrderNum
+WHERE id = :uiPropertyId;
+
+-- util
+lastInsertedRowId:
+SELECT last_insert_rowid();

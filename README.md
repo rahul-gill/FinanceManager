@@ -7,3 +7,4 @@ Mention how to
 - config key value pairs with multiplatform settings library
 - custom preview class for multiple preview
 - sqldelight setup
+- navigation and animations 

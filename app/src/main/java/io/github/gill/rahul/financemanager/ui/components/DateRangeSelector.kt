@@ -22,11 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.gill.rahul.financemanager.R
-import io.github.gill.rahul.financemanager.StringResources
 import io.github.gill.rahul.financemanager.ui.theme.FinanceManagerTheme
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun DateRangeSelector(
@@ -103,11 +100,15 @@ private fun Previews() {
             DateRangeSelector(
                 dateRangeType = dateRangeType,
                 dateRangeStart = dateRangeStartDate,
-                onPreviousRange = { dateRangeStartDate = dateRangeType.calculatePreviousStartDate(dateRangeStartDate) },
-                onNextRange = { dateRangeStartDate = dateRangeType.calculateNextStartDate(dateRangeStartDate) },
+                onPreviousRange = {
+                    dateRangeStartDate =
+                        dateRangeType.calculatePreviousStartDate(dateRangeStartDate)
+                },
+                onNextRange = {
+                    dateRangeStartDate = dateRangeType.calculateNextStartDate(dateRangeStartDate)
+                },
             )
             DateRangeTypeButton(dateRangeType = dateRangeType, onClick = {
-                /*TODO*/
                 dateRangeType = listOf(
                     DateRangeType.Daily,
                     DateRangeType.All,
@@ -118,61 +119,5 @@ private fun Previews() {
                 ).random()
             })
         }
-    }
-}
-
-sealed class DateRangeType {
-    data object Daily : DateRangeType()
-    data object Weekly : DateRangeType()
-    data object Monthly : DateRangeType()
-    data object Yearly : DateRangeType()
-    data object All : DateRangeType()
-    data class Custom(val daysInRange: Long) : DateRangeType()
-
-    fun formatWithStartDate(startDate: LocalDate = LocalDate.now()): String {
-        return when (this) {
-            // TODO
-            All -> StringResources.get(R.string.all_time)
-            is Custom -> StringResources.get(R.string.all_time)
-            Daily -> StringResources.get(R.string.all_time)
-            Monthly -> StringResources.get(R.string.all_time)
-            Weekly -> StringResources.get(R.string.all_time)
-            Yearly -> DateTimeFormatter.ofPattern(StringResources.get(R.string.format_year)).format(startDate)
-        }
-    }
-
-    fun calculatePreviousStartDate(startDate: LocalDate = LocalDate.now()): LocalDate {
-        return when (this) {
-            All -> error("All date range doesn't support calculatePreviousStartDate")
-            is Custom -> startDate.minusDays(daysInRange)
-            Daily -> startDate.minusDays(1)
-            Monthly -> startDate.minusMonths(1)
-            Weekly -> startDate.minusWeeks(1)
-            Yearly -> startDate.plusYears(1)
-        }
-    }
-
-    fun calculateNextStartDate(startDate: LocalDate = LocalDate.now()): LocalDate {
-        return when (this) {
-            All -> error("All date range doesn't support calculateNextStartDate")
-            is Custom -> startDate.plusDays(daysInRange)
-            Daily -> startDate.plusDays(1)
-            Monthly -> startDate.plusMonths(1)
-            Weekly -> startDate.plusWeeks(1)
-            Yearly -> startDate.plusYears(1)
-        }
-    }
-
-    fun typeName(): String {
-        return StringResources.get(
-            when (this) {
-                All -> R.string.all_time
-                is Custom -> R.string.custom
-                Daily -> R.string.daily
-                Monthly -> R.string.monthly
-                Weekly -> R.string.weekly
-                Yearly -> R.string.yearly
-            }
-        )
     }
 }

@@ -6,10 +6,8 @@ enum class ThemeType {
     Dark
 }
 object PreferenceManager {
-    val themePref = IntInternalPreference(
+    val themePref = enumPreference(
         key = "app_theme",
-        defaultValue = ThemeType.System,
-        toInt = { it.ordinal },
-        fromInt = { ThemeType.entries[it] }
+        defaultValue = ThemeType.System
     )
 }

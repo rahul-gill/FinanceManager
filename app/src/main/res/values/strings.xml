@@ -11,4 +11,8 @@
     <string name="stats">Stats</string>
     <string name="more">More</string>
     <string name="format_year">yyyy</string>
+    <string name="format_date_range_day">MMM d, yy</string>
+    <string name="format_month">MMMM yyyy</string>
+    <string name="format_daily">EEE, MMM d, yyyy</string>
+    <string name="format_date_range">%1$s - %2$s</string>
 </resources>

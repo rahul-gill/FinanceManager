@@ -8,6 +8,7 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.coroutines.getIntFlow
 import com.russhwolf.settings.coroutines.getLongFlow
 import com.russhwolf.settings.coroutines.getStringFlow
+import com.russhwolf.settings.get
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,8 +16,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-private val settings: Settings by lazy { Settings() }
-private val observableSettings: ObservableSettings by lazy { settings as ObservableSettings }
+val settings: Settings by lazy { Settings() }
+val observableSettings: ObservableSettings by lazy { settings as ObservableSettings }
 
 interface Preference<T> {
     fun setValue(value: T)
@@ -26,23 +27,24 @@ interface Preference<T> {
     val defaultValue: T
 }
 
-class IntInternalPreference<T>(
-    override val key: String,
-    override val defaultValue: T,
-    val fromInt: (Int) -> T,
-    val toInt: (T) -> Int
-): Preference<T> {
+inline fun <reified T : Enum<T>> enumPreference(
+    key: String,
+    defaultValue: T
+) = object : Preference<T> {
+
+    override val key = key
+    override val defaultValue = defaultValue
+
     override fun setValue(value: T) {
-        settings.putInt(key, toInt(value))
+        settings.putInt(key, value.ordinal)
     }
 
     override val value: T
-        get() = fromInt(settings.getInt(key, toInt(defaultValue)))
+        get() = enumValues<T>()[settings.getInt(key, defaultValue.ordinal)]
     override val observableValue: StateFlow<T>
-        get() = observableSettings.getIntFlow(key, toInt(defaultValue))
-            .map(fromInt)
+        get() = observableSettings.getIntFlow(key, defaultValue.ordinal)
+            .map { enumValues<T>()[it] }
             .stateIn(GlobalScope, SharingStarted.Eagerly, value)
-
 }
 
 class IntPreference(
