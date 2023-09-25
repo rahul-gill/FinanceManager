@@ -1,6 +1,5 @@
 package io.github.gill.rahul.financemanager.ui
 
-import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -11,22 +10,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
 
 private const val AnimationDuration = 250
 
-public fun materialSharedAxisZ(
-    forward: Boolean,
-    durationMillis: Int = AnimationDuration,
-): ContentTransform = materialSharedAxisZIn(
-    forward = forward,
-    durationMillis = durationMillis
-) togetherWith materialSharedAxisZOut(
-    forward = forward,
-    durationMillis = durationMillis
-)
-
-public fun materialSharedAxisZIn(
+fun materialSharedAxisZIn(
     forward: Boolean,
     durationMillis: Int = AnimationDuration,
 ): EnterTransition = fadeIn(
@@ -43,7 +30,7 @@ public fun materialSharedAxisZIn(
     initialScale = if (forward) 0.8f else 1.1f
 )
 
-public fun materialSharedAxisZOut(
+fun materialSharedAxisZOut(
     forward: Boolean,
     durationMillis: Int = AnimationDuration,
 ): ExitTransition = fadeOut(

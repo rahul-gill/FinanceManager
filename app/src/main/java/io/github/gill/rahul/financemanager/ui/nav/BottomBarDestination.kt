@@ -9,10 +9,10 @@ import androidx.compose.material.icons.outlined.StackedLineChart
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import io.github.gill.rahul.financemanager.R
-import io.github.gill.rahul.financemanager.destinations.BudgetScreenDestination
-import io.github.gill.rahul.financemanager.destinations.HomeScreenDestination
-import io.github.gill.rahul.financemanager.destinations.MoreSettingsScreenDestination
-import io.github.gill.rahul.financemanager.destinations.StatsScreenDestination
+import io.github.gill.rahul.financemanager.ui.destinations.BudgetScreenDestination
+import io.github.gill.rahul.financemanager.ui.destinations.HomeScreenDestination
+import io.github.gill.rahul.financemanager.ui.destinations.MoreSettingsScreenDestination
+import io.github.gill.rahul.financemanager.ui.destinations.StatsScreenDestination
 
 enum class BottomBarDestination(
     val direction: DirectionDestinationSpec,
