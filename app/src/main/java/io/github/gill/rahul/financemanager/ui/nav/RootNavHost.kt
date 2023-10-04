@@ -21,16 +21,16 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.navigation.navigate
-import io.github.gill.rahul.financemanager.ui.NavGraphs
-import io.github.gill.rahul.financemanager.ui.appCurrentDestinationAsState
-import io.github.gill.rahul.financemanager.ui.destinations.BudgetScreenDestination
-import io.github.gill.rahul.financemanager.ui.destinations.Destination
-import io.github.gill.rahul.financemanager.ui.destinations.HomeScreenDestination
-import io.github.gill.rahul.financemanager.ui.destinations.MoreSettingsScreenDestination
-import io.github.gill.rahul.financemanager.ui.destinations.StatsScreenDestination
+import io.github.gill.rahul.financemanager.NavGraphs
+import io.github.gill.rahul.financemanager.appCurrentDestinationAsState
+import io.github.gill.rahul.financemanager.destinations.BudgetScreenDestination
+import io.github.gill.rahul.financemanager.destinations.Destination
+import io.github.gill.rahul.financemanager.destinations.HomeScreenDestination
+import io.github.gill.rahul.financemanager.destinations.MoreSettingsScreenDestination
+import io.github.gill.rahul.financemanager.destinations.StatsScreenDestination
+import io.github.gill.rahul.financemanager.startAppDestination
 import io.github.gill.rahul.financemanager.ui.materialSharedAxisZIn
 import io.github.gill.rahul.financemanager.ui.materialSharedAxisZOut
-import io.github.gill.rahul.financemanager.ui.startAppDestination
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
@@ -41,9 +41,9 @@ fun RootNavHost() {
             ?: NavGraphs.root.startAppDestination
     val shouldShowBottomNav = remember(currentDestination) {
         currentDestination == HomeScreenDestination ||
-                currentDestination == BudgetScreenDestination ||
-                currentDestination == StatsScreenDestination ||
-                currentDestination == MoreSettingsScreenDestination
+            currentDestination == BudgetScreenDestination ||
+            currentDestination == StatsScreenDestination ||
+            currentDestination == MoreSettingsScreenDestination
     }
     val navHostEngine = rememberAnimatedNavHostEngine(
         navHostContentAlignment = Alignment.TopCenter,
