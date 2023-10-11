@@ -5,6 +5,7 @@ import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,7 @@ import androidx.compose.material.icons.filled.SubdirectoryArrowLeft
 import androidx.compose.material.icons.filled.SubdirectoryArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.DatePicker
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,26 +70,13 @@ import io.github.gill.rahul.financemanager.ui.components.formatWithStartDate
 import io.github.gill.rahul.financemanager.ui.components.name
 import io.github.gill.rahul.financemanager.ui.theme.FinanceManagerTheme
 import io.github.gill.rahul.financemanager.ui.theme.MoneyManagerPreviews
-import io.github.gill.rahul.financemanager.ui.theme.PreviewWrapper
 import io.github.gill.rahul.financemanager.ui.theme.getContentColorForBackground
 import io.github.gill.rahul.financemanager.util.millisToLocalDate
-import java.time.Duration
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
-import java.util.concurrent.TimeUnit
 
 // TODO 1: fix dialogs and income expense icons and their onClick events
 // TODO 2: implement create transaction screen
 // TODO 3: setup data things
-
-@MoneyManagerPreviews
-@Composable
-private fun MainScreenPreview() {
-    PreviewWrapper {
-        HomeScreen()
-    }
-}
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
@@ -126,13 +114,17 @@ fun HomeScreen() {
                 DateRangeSelector(
                     dateRangeType = selectedDateRangeType,
                     dateRangeStart = dateRangeStartDate,
-                    onPreviousRange = {
-                        dateRangeStartDate =
-                            selectedDateRangeType.calculatePreviousStartDate(dateRangeStartDate)
+                    onPreviousRange = remember {
+                        return@remember {
+                            dateRangeStartDate =
+                                selectedDateRangeType.calculatePreviousStartDate(dateRangeStartDate)
+                        }
                     },
-                    onNextRange = {
-                        dateRangeStartDate =
-                            selectedDateRangeType.calculateNextStartDate(dateRangeStartDate)
+                    onNextRange = remember {
+                        return@remember {
+                            dateRangeStartDate =
+                                selectedDateRangeType.calculateNextStartDate(dateRangeStartDate)
+                        }
                     },
                 )
                 FilledTonalButton(onClick = {
@@ -142,7 +134,10 @@ fun HomeScreen() {
                         modifier = Modifier.padding(end = 4.dp),
                         text = selectedDateRangeType.name(LocalContext.current)
                     )
-                    Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = null
+                    )
                 }
             }
             Row(
@@ -166,7 +161,9 @@ fun HomeScreen() {
                     iconColor = MaterialTheme.colorScheme.secondary
                 )
             }
-            LazyColumn(state = listState) {
+            LazyColumn(
+                state = listState
+            ) {
                 // TODO
                 stickyHeader {
                     TransactionsListHeader(
@@ -241,7 +238,6 @@ fun HomeScreen() {
                     selectedDateRangeType = type
                     showDateRangeTypeDialog = false
                 }
-
             },
             choiceName = { it.name(context) }
         )
@@ -252,8 +248,8 @@ fun HomeScreen() {
             onDismissRequest = { showCustomDateRangeSelectorDialog = false },
             confirmButton = {
                 TextButton(
-                    enabled = dateRangeState.selectedEndDateMillis != null
-                            && dateRangeState.selectedStartDateMillis != null,
+                    enabled = dateRangeState.selectedEndDateMillis != null &&
+                        dateRangeState.selectedStartDateMillis != null,
                     onClick = {
                         customRangeLengthDays = dateRangeState.run {
                             (selectedEndDateMillis!! - selectedStartDateMillis!!) / 86400000L
@@ -308,7 +304,10 @@ fun DateRangeSelector(
                 modifier = Modifier.padding(start = 8.dp),
                 onClick = onNextRange
             ) {
-                Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "TODO")
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = "TODO"
+                )
             }
         }
     }
@@ -320,10 +319,13 @@ fun IncomeExpenseCard(
     title: String,
     amount: String,
     icon: ImageVector,
-    iconColor: Color
+    iconColor: Color,
+    onClick: () -> Unit = {}
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .then(modifier)
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
@@ -379,10 +381,16 @@ fun TransactionsListItem(
     title: String = "Tea",
     subtitle: String = "Food and drinks",
     icon: ImageVector = Icons.Default.Fastfood,
-    color: Color = Color.Yellow
+    color: Color = Color.Yellow,
+    onClick: () -> Unit = {}
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .then(modifier),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        )
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
@@ -414,73 +422,6 @@ fun TransactionsListItem(
                 )
             }
             Text(text = "-15", style = MaterialTheme.typography.bodyLarge)
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DateRangeTypeSelectionDialog(
-    onDismiss: () -> Unit,
-    customRangeLengthDays: Long,
-    dateRangeType: DateRangeType,
-    setDateRangeType: (DateRangeType) -> Unit,
-    openCustomDateRangeSelectorDialog: () -> Unit
-) {
-    AlertDialog(onDismissRequest = onDismiss) {
-        val radioOptions = listOf(
-            DateRangeType.Daily,
-            DateRangeType.Weekly,
-            DateRangeType.Monthly,
-            DateRangeType.Yearly,
-            DateRangeType.Custom(customRangeLengthDays)
-        )
-        Card {
-            Text(
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .align(Alignment.CenterHorizontally),
-                text = "Group transactions by",
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(
-                modifier = Modifier
-                    .height(1.dp)
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            )
-            Column(Modifier.selectableGroup()) {
-                radioOptions.forEach { type ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .selectable(
-                                selected = (type == dateRangeType),
-                                onClick = {
-                                    if (type is DateRangeType.Custom) {
-                                        openCustomDateRangeSelectorDialog()
-                                    } else {
-                                        setDateRangeType(type)
-                                    }
-                                },
-                                role = Role.RadioButton
-                            )
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            selected = (dateRangeType == type),
-                            onClick = null
-                        )
-                        Text(
-                            text = type.name(LocalContext.current),
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier.padding(start = 16.dp)
-                        )
-                    }
-                }
-            }
         }
     }
 }

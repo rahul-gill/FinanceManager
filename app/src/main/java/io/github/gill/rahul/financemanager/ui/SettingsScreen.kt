@@ -1,5 +1,6 @@
 package io.github.gill.rahul.financemanager.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.FormatLineSpacing
+import androidx.compose.material.icons.filled.ShortText
 import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,13 +28,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.navigate
+import io.github.gill.rahul.financemanager.destinations.CategoryScreenDestination
 
 
 @Destination
 @Composable
-@Preview(showBackground = true)
-fun MoreSettingsScreen() {
+fun MoreSettingsScreen(
+    navController: NavController
+) {
     LazyColumn {
         item {
             Row(
@@ -73,6 +79,15 @@ fun MoreSettingsScreen() {
                 text = "Setting",
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
+        item {
+            SettingsItem(
+                modifier = Modifier.padding(vertical = 4.dp),
+                icon = Icons.Default.ShortText,
+                title = "Categories",
+                description = "Add, edit or reorder categories",
+                onClick = { navController.navigate(CategoryScreenDestination) }
             )
         }
         items(5) {
@@ -132,10 +147,11 @@ fun SettingsItem(
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Default.FormatLineSpacing,
     title: String = "Categories",
-    description: String = "Add, edit or reorder categories"
+    description: String = "Add, edit or reorder categories",
+    onClick: () -> Unit = {}
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.then(Modifier.clickable { onClick() }),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         )
