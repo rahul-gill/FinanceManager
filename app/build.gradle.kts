@@ -88,6 +88,9 @@ dependencies {
         implementation(primitive.adapters)
         testImplementation(test.driver)
     }
+
+
+    implementation("com.github.skydoves:colorpicker-compose:1.0.5")
 }
 
 sqldelight {

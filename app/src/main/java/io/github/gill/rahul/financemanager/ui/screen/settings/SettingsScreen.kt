@@ -1,4 +1,4 @@
-package io.github.gill.rahul.financemanager.ui
+package io.github.gill.rahul.financemanager.ui.screen.settings
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.navigate
 import io.github.gill.rahul.financemanager.destinations.CategoryScreenDestination
+import io.github.gill.rahul.financemanager.destinations.CreateAccountScreenDestination
 
 
 @Destination
@@ -63,7 +64,7 @@ fun MoreSettingsScreen(
                         text = "Overall: $1000"
                     )
                 }
-                TextButton(onClick = { /*TODO*/ }) {
+                TextButton(onClick = { navController.navigate(CreateAccountScreenDestination) }) {
                     Text(text = "Add New")
                 }
             }

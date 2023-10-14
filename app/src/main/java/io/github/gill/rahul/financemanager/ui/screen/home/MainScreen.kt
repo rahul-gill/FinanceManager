@@ -1,4 +1,4 @@
-package io.github.gill.rahul.financemanager.ui.home
+package io.github.gill.rahul.financemanager.ui.screen.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideIn
@@ -12,13 +12,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,7 +26,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.SubdirectoryArrowLeft
 import androidx.compose.material.icons.filled.SubdirectoryArrowRight
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -40,7 +36,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -58,12 +53,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.navigate
+import io.github.gill.rahul.financemanager.destinations.CreateTransactionScreenDestination
 import io.github.gill.rahul.financemanager.ui.components.DateRangeType
 import io.github.gill.rahul.financemanager.ui.components.SingleChoiceDialog
 import io.github.gill.rahul.financemanager.ui.components.formatWithStartDate
@@ -82,7 +79,9 @@ import java.time.LocalDate
 @RootNavGraph(start = true)
 @Destination
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navController: NavController
+) {
     var selectedDateRangeType: DateRangeType by remember {
         mutableStateOf(DateRangeType.Daily)
     }
@@ -209,7 +208,7 @@ fun HomeScreen() {
             FloatingActionButton(
                 modifier = Modifier
                     .padding(8.dp),
-                onClick = { /*TODO*/ }
+                onClick = { navController.navigate(CreateTransactionScreenDestination) }
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "TODO")
             }
@@ -249,7 +248,7 @@ fun HomeScreen() {
             confirmButton = {
                 TextButton(
                     enabled = dateRangeState.selectedEndDateMillis != null &&
-                        dateRangeState.selectedStartDateMillis != null,
+                            dateRangeState.selectedStartDateMillis != null,
                     onClick = {
                         customRangeLengthDays = dateRangeState.run {
                             (selectedEndDateMillis!! - selectedStartDateMillis!!) / 86400000L

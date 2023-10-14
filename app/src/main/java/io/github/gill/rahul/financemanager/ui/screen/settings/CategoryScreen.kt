@@ -1,9 +1,10 @@
-package io.github.gill.rahul.financemanager.ui
+package io.github.gill.rahul.financemanager.ui.screen.settings
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,16 +55,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.ramcosta.composedestinations.annotation.Destination
+import io.github.gill.rahul.financemanager.db.Categories
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Destination
 fun CategoryScreen(
-    navController: NavController
+    navController: NavController,
+    onCategoryClick: (categoryId: Long) -> Unit,
+    expenseCategories: List<Categories>,
+    incomeCategories: List<Categories>,
+    saveCategoriesOrder: (categoryIdToOrderIndex: Map<Long, Int>) -> Unit
 ) {
     val (isIncomeCategoryShown, setIsIncomeCategoryShown) = remember {
         mutableStateOf(false)
@@ -73,7 +80,7 @@ fun CategoryScreen(
                     Text(text = "Categories")
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
+                    IconButton(onClick = navController::navigateUp) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "TODO")
                     }
                 }
@@ -81,7 +88,11 @@ fun CategoryScreen(
         }
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
-            Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            ) {
                 FilterChip(
                     selected = isIncomeCategoryShown,
                     onClick = {
@@ -105,11 +116,13 @@ fun CategoryScreen(
                 modifier = Modifier.padding(8.dp),
                 style = MaterialTheme.typography.labelMedium
             )
-            val list = (0..19).map { MyListItem(position = it, title = "Item $it") }.toMutableStateList()
+            val list = (if (isIncomeCategoryShown) incomeCategories else expenseCategories)
+                .toMutableStateList()
 
             val listState = rememberLazyListState()
             val dragDropState = rememberDragDropState(listState) { fromIndex, toIndex ->
-                list.add(toIndex, list.removeAt(fromIndex))
+                val fromItem = list.removeAt(fromIndex)
+                list.add(toIndex, fromItem)
             }
 
             LazyColumn(
@@ -120,21 +133,37 @@ fun CategoryScreen(
             ) {
                 itemsIndexed(list, key = { _, item -> item.id }) { index, item ->
                     DraggableItem(dragDropState, index) { isDragging ->
-                        val elevation by animateDpAsState(if (isDragging) 4.dp else 1.dp)
-                        Card(elevation = CardDefaults.cardElevation(defaultElevation = elevation)) {
+                        val elevation by animateDpAsState(
+                            if (isDragging) 20.dp else 1.dp,
+                            label = "Elevation"
+                        )
+                        LaunchedEffect(elevation) {
+                            println("TSDASDAS" + elevation.value)
+                        }
+                        Card(
+                            elevation = CardDefaults.cardElevation(defaultElevation = elevation),
+                            modifier = Modifier
+                                .dragContainerForDragHandle(
+                                    dragDropState = dragDropState,
+                                    key = item.id
+                                )
+                                .clickable {
+                                    onCategoryClick(item.id)
+                                }
+                        ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Filled.DragHandle,
                                     contentDescription = null,
                                     modifier = Modifier
                                         .padding(vertical = 16.dp)
-                                        .dragContainerForDragHandle(
-                                            dragDropState = dragDropState,
-                                            key = item.id
-                                        )
+//                                        .dragContainerForDragHandle(
+//                                            dragDropState = dragDropState,
+//                                            key = item.id
+//                                        )
                                 )
                                 Text(
-                                    text = item.title,
+                                    text = item.name,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(20.dp)
@@ -148,11 +177,6 @@ fun CategoryScreen(
     }
 }
 
-data class MyListItem(
-    val id: String = UUID.randomUUID().toString(),
-    val position: Int = 0,
-    val title: String = ""
-)
 
 @Composable
 fun rememberDragDropState(
@@ -186,8 +210,8 @@ class DragDropState internal constructor(
 
     internal val scrollChannel = Channel<Float>()
 
-    private var draggingItemDraggedDelta by mutableStateOf(0f)
-    private var draggingItemInitialOffset by mutableStateOf(0)
+    private var draggingItemDraggedDelta by mutableFloatStateOf(0f)
+    private var draggingItemInitialOffset by mutableIntStateOf(0)
     internal val draggingItemOffset: Float
         get() = draggingItemLayoutInfo?.let { item ->
             draggingItemInitialOffset + draggingItemDraggedDelta - item.offset
@@ -204,7 +228,8 @@ class DragDropState internal constructor(
 
     internal fun onDragStartWithKey(key: Any) {
         draggingItemIndex = state.layoutInfo.visibleItemsInfo.firstOrNull { it.key == key }?.index
-        draggingItemInitialOffset = state.layoutInfo.visibleItemsInfo[draggingItemIndex?.minus(state.firstVisibleItemIndex) ?: 0].offset
+        draggingItemInitialOffset =
+            state.layoutInfo.visibleItemsInfo[draggingItemIndex?.minus(state.firstVisibleItemIndex) ?: 0].offset
     }
 
     internal fun onDragInterrupted() {

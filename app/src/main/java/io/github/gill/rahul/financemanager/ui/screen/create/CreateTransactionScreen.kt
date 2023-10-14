@@ -1,4 +1,4 @@
-package io.github.gill.rahul.financemanager.ui.create
+package io.github.gill.rahul.financemanager.ui.screen.create
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -8,15 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.SubdirectoryArrowLeft
 import androidx.compose.material.icons.filled.SubdirectoryArrowRight
 import androidx.compose.material.icons.filled.Wallet
+import androidx.compose.material.icons.outlined.Calculate
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedFilterChip
@@ -61,9 +62,12 @@ fun CreateTransactionScreen() {
         mutableStateOf(false)
     }
     val (amount, setAmount) = remember {
-        mutableStateOf("")
+        mutableStateOf("100")
     }
     val (title, setTitle) = remember {
+        mutableStateOf("")
+    }
+    val (note, setNote) = remember {
         mutableStateOf("")
     }
     Column(Modifier.fillMaxSize()) {
@@ -119,13 +123,32 @@ fun CreateTransactionScreen() {
                 }
             )
         }
-        BasicTextField(
+        //TODO make this  better
+        OutlinedTextField(
             value = amount,
             onValueChange = setAmount,
+            textStyle = MaterialTheme.typography.titleLarge,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(imageVector = Icons.Outlined.Calculate, contentDescription = "TODO")
+                }
+            }
         )
-        OutlinedTextField(value = title, onValueChange = setTitle, label = { Text(text = "Title") })
+        OutlinedTextField(
+            value = title,
+            onValueChange = setTitle,
+            label = { Text(text = "Title") },
+            modifier = Modifier.fillMaxWidth()
+        )
         CategoryChooser()
+        OutlinedTextField(
+            value = note,
+            onValueChange = setNote,
+            label = { Text(text = "Note") },
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -144,8 +167,8 @@ private fun TopBar(
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(
-            bottomStartPercent = 50,
-            bottomEndPercent = 50
+            bottomStartPercent = 25,
+            bottomEndPercent = 25
         )
     ) {
         Row(
@@ -168,15 +191,19 @@ private fun TopBar(
                     Icon(imageVector = accountIcon, contentDescription = "TODO")
                 }
             }
-            Text(text = accountName, style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = accountName,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f)
+            )
             IconButton(
                 onClick = onChooseAccount,
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+//                    containerColor = MaterialTheme.colorScheme.primary,
+//                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "TODO")
+                Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "TODO")
             }
         }
     }
