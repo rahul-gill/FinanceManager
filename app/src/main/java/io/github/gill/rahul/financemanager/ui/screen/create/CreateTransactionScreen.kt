@@ -42,8 +42,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import com.ramcosta.composedestinations.annotation.Destination
-import io.github.gill.rahul.financemanager.ui.theme.MoneyManagerPreviews
-import io.github.gill.rahul.financemanager.ui.theme.PreviewWrapper
+import io.github.gill.rahul.financemanager.ui.MoneyManagerPreviews
+import io.github.gill.rahul.financemanager.ui.PreviewWrapper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -143,6 +143,7 @@ fun CreateTransactionScreen() {
             modifier = Modifier.fillMaxWidth()
         )
         CategoryChooser()
+
         OutlinedTextField(
             value = note,
             onValueChange = setNote,

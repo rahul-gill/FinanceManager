@@ -9,3 +9,8 @@ Mention how to
 - sqldelight setup
 - navigation and animations
 - copying from open source projects
+- libs.toml
+
+
+Issues
+- ripple on click of icons doesn't look good

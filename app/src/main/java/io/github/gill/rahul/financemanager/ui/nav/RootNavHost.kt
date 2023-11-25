@@ -42,7 +42,7 @@ fun RootNavHost() {
         navController.appCurrentDestinationAsState().value
             ?: NavGraphs.root.startAppDestination
 
-    val shouldShowBottomNav by remember {
+    val shouldShowBottomNav by remember(currentDestination) {
         derivedStateOf {
             currentDestination == HomeScreenDestination ||
                 currentDestination == BudgetScreenDestination ||

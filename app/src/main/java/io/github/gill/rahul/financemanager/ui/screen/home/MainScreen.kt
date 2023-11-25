@@ -66,8 +66,8 @@ import io.github.gill.rahul.financemanager.ui.components.SingleChoiceDialog
 import io.github.gill.rahul.financemanager.ui.components.formatWithStartDate
 import io.github.gill.rahul.financemanager.ui.components.name
 import io.github.gill.rahul.financemanager.ui.theme.FinanceManagerTheme
-import io.github.gill.rahul.financemanager.ui.theme.MoneyManagerPreviews
-import io.github.gill.rahul.financemanager.ui.theme.getContentColorForBackground
+import io.github.gill.rahul.financemanager.ui.MoneyManagerPreviews
+import io.github.gill.rahul.financemanager.ui.getContentColorForBackground
 import io.github.gill.rahul.financemanager.util.millisToLocalDate
 import java.time.LocalDate
 
