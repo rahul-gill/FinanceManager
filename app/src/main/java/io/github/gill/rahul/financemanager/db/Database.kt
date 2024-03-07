@@ -6,6 +6,7 @@ import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import io.github.gill.rahul.financemanager.FinanceManagerApp
+import wow.app.core.util.Singleton
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -32,14 +33,14 @@ private object LocalDateTimeAdapter : ColumnAdapter<LocalDateTime, String> {
         value.format(DateTimeFormatter.ISO_DATE_TIME)
 }
 
-private val sqliteDriver by lazy {
+private val sqliteDriver by Singleton.build {
     getAndroidSqliteDriver(FinanceManagerApp.instance)
 }
 
-val sqliteDB by lazy {
+val sqliteDB by Singleton.build {
     getSqliteDB(sqliteDriver)
 }
 
-val dbQueries by lazy {
+val dbQueries by Singleton.build {
     getDBQueries(sqliteDB)
 }

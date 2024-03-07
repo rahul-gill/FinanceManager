@@ -14,3 +14,7 @@ Mention how to
 
 Issues
 - ripple on click of icons doesn't look good
+- navigation and animations
+
+
+- budeget progress on main screen

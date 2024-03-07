@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalSettingsApi::class, DelicateCoroutinesApi::class)
 
-package io.github.gill.rahul.financemanager.prefs
+package wow.app.core.prefs
 
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
@@ -8,7 +8,7 @@ import com.russhwolf.settings.Settings
 import com.russhwolf.settings.coroutines.getIntFlow
 import com.russhwolf.settings.coroutines.getLongFlow
 import com.russhwolf.settings.coroutines.getStringFlow
-import com.russhwolf.settings.get
+import com.russhwolf.settings.coroutines.getStringOrNullFlow
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,6 +25,28 @@ interface Preference<T> {
     val observableValue: StateFlow<T>
     val key: String
     val defaultValue: T
+}
+
+fun <T> customPreference(
+    key: String,
+    defaultValue: T,
+    serialize: (T) -> String,
+    deserialize: (String?) -> T
+) = object : Preference<T> {
+
+    override val key = key
+    override val defaultValue = defaultValue
+
+    override fun setValue(value: T) {
+        settings.putString(key, serialize(value))
+    }
+
+    override val value: T
+        get() = deserialize(settings.getStringOrNull(key))
+    override val observableValue: StateFlow<T>
+        get() = observableSettings.getStringOrNullFlow(key)
+            .map { deserialize(it) }
+            .stateIn(GlobalScope, SharingStarted.Eagerly, value)
 }
 
 inline fun <reified T : Enum<T>> enumPreference(

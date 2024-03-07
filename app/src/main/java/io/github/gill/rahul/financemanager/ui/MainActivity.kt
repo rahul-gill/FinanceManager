@@ -11,7 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import io.github.gill.rahul.financemanager.ui.nav.RootNavHost
-import io.github.gill.rahul.financemanager.ui.theme.FinanceManagerTheme
+import wow.app.core.ui.FinManTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,9 +25,10 @@ class MainActivity : ComponentActivity() {
             )
         )
         setContent {
-            FinanceManagerTheme {
+            FinManTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     RootNavHost()
@@ -36,3 +37,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

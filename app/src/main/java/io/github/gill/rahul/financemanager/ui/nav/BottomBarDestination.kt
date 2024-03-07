@@ -9,18 +9,13 @@ import androidx.compose.material.icons.outlined.StackedLineChart
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 import io.github.gill.rahul.financemanager.R
-import io.github.gill.rahul.financemanager.destinations.BudgetScreenDestination
-import io.github.gill.rahul.financemanager.destinations.HomeScreenDestination
-import io.github.gill.rahul.financemanager.destinations.MoreSettingsScreenDestination
-import io.github.gill.rahul.financemanager.destinations.StatsScreenDestination
-
-enum class BottomBarDestination(
-    val direction: DirectionDestinationSpec,
-    val icon: ImageVector,
-    @StringRes val label: Int
-) {
-    Home(HomeScreenDestination, Icons.Outlined.Home, R.string.home),
-    Budget(BudgetScreenDestination, Icons.Outlined.InsertChartOutlined, R.string.budget),
-    Stats(StatsScreenDestination, Icons.Outlined.StackedLineChart, R.string.stats),
-    More(MoreSettingsScreenDestination, Icons.Outlined.Menu, R.string.more)
-}
+//enum class BottomBarDestination(
+//    val direction: DirectionDestinationSpec,
+//    val icon: ImageVector,
+//    @StringRes val label: Int
+//) {
+//    Home(HomeScreenDestination, Icons.Outlined.Home, R.string.home),
+//    Budget(BudgetScreenDestination, Icons.Outlined.InsertChartOutlined, R.string.budget),
+//    Stats(StatsScreenDestination, Icons.Outlined.StackedLineChart, R.string.stats),
+//    More(MoreSettingsScreenDestination, Icons.Outlined.Menu, R.string.more)
+//}

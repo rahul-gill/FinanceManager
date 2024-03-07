@@ -1,20 +1,21 @@
 [versions]
-agp = "8.3.0-alpha12"
-desugar-libs = "2.0.3"
-kotlin = "1.9.10"
+agp = "8.3.0-beta01"
+desugar-libs = "2.0.4"
+kotlin = "1.9.22"
 ksp = "1.9.10-1.0.13"
 core-ktx = "1.12.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
-lifecycle-runtime-ktx = "2.6.2"
-activity-compose = "1.8.0"
-compose-bom = "2023.10.01"
+lifecycle-runtime-ktx = "2.7.0"
+activity-compose = "1.8.2"
+compose-bom = "2024.01.00"
 detekt = "1.23.1"
 compose-destination = "1.9.53"
-multiplatform-settings = "1.0.0"
+multiplatform-settings = "1.1.1"
 sqldelight = "2.0.0"
 twitter-detekt = "0.0.26"
+material3="1.2.0-rc01"
 
 
 [libraries]
@@ -36,11 +37,11 @@ compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-destination-core = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "compose-destination" }
 compose-destination-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destination" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3", version.ref ="material3"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -49,3 +50,4 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
