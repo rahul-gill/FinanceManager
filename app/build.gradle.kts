@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.sqldelight)
 }
@@ -25,8 +24,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -41,7 +44,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
@@ -51,43 +54,35 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
+    implementation(libs.androidx.material3.android)
     coreLibraryDesugaring(libs.desugar.libs)
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
 
-    with(libs.compose) {
-        implementation(platform(bom))
-        implementation(ui.tooling)
-        implementation(material3)
-        implementation(material.icons.extended)
-        androidTestImplementation(platform(bom))
-        androidTestImplementation(ui.test.junit4)
-        debugImplementation(ui.tooling)
-        debugImplementation(ui.test.manifest)
-    }
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui.tooling)
+//        implementation(material3)
+    implementation(libs.compose.material.icons.extended)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.tooling)
+    debugImplementation(libs.compose.ui.test.manifest)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    with(libs.compose.destination) {
-        implementation(core)
-        ksp(ksp)
-    }
+    implementation("dev.olshevski.navigation:reimagined:1.5.0")
+    implementation("dev.olshevski.navigation:reimagined-material3:1.5.0")
 
-    with(libs.multiplatform.settings) {
-        implementation(no.arg)
-        implementation(coroutines)
-    }
 
-    with(libs.sqldelight) {
-        implementation(android.driver)
-        implementation(coroutines)
-        implementation(primitive.adapters)
-        testImplementation(test.driver)
-    }
+    implementation(libs.sqldelight.android.driver)
+    implementation(libs.sqldelight.coroutines)
+    implementation(libs.sqldelight.primitive.adapters)
+    testImplementation(libs.sqldelight.test.driver)
 }
 
 sqldelight {

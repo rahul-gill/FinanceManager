@@ -1,4 +1,4 @@
-package io.github.gill.rahul.financemanager.util
+package wow.app.core.util
 
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty

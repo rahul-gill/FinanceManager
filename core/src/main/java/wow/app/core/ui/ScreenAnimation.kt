@@ -1,4 +1,4 @@
-package io.github.gill.rahul.financemanager.ui
+package wow.app.core.ui
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition

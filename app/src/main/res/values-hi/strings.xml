@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">वित्त प्रबंधक</string>
+    <string name="all_time">पूरा समय</string>
+    <string name="custom">अपने हिसाब से</string>
+    <string name="daily">दैनिक</string>
+    <string name="monthly">मासिक</string>
+    <string name="weekly">साप्ताहिक</string>
+    <string name="yearly">सालाना</string>
+    <string name="dashboard">डैशबोर्ड</string>
+    <string name="budget">बजट</string>
+    <string name="stats">आंकड़े</string>
+    <string name="more">अन्य</string>
+    <string name="create_new_transaction">नया लेन-देन बनाएं</string>
+    <string name="income">आमदनी</string>
+    <string name="expense">खर्चा</string>
+    <string name="balance">खाते में शेष</string>
+    <string name="group_transactions_by">लेन-देन समूहीकृत करने का तरीका</string>
+    <string name="go_back_screen">पिछली स्क्रीन पर जाएँ</string>
+    <string name="ok">ठीक है</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="done">हो गया</string>
+    <string name="enter_amount">रकम डालें</string>
+    <string name="title">शीर्षक / नाम</string>
+    <string name="note">टिप्पणी तथा अन्य जानकारी</string>
+    <string name="batch_add">और भी जोडें</string>
+    <string name="select_time">समय चुनें</string>
+</resources>

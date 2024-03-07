@@ -6,13 +6,28 @@
     <string name="monthly">Monthly</string>
     <string name="weekly">Weekly</string>
     <string name="yearly">Yearly</string>
-    <string name="home">Home</string>
+    <string name="dashboard">Dashboard</string>
     <string name="budget">Budget</string>
     <string name="stats">Stats</string>
     <string name="more">More</string>
-    <string name="format_year">yyyy</string>
-    <string name="format_date_range_day">MMM d, yy</string>
-    <string name="format_month">MMMM yyyy</string>
-    <string name="format_daily">EEE, MMM d, yyyy</string>
-    <string name="format_date_range">%1$s - %2$s</string>
+    <string name="format_year" translatable="false">yyyy</string>
+    <string name="format_date_range_day" translatable="false">MMMM d, yy</string>
+    <string name="format_month" translatable="false">MMMM yyyy</string>
+    <string name="format_day" translatable="false">EEE, MMM d, yyyy</string>
+    <string name="format_date_range" translatable="false">%1$s - %2$s</string>
+    <string name="create_new_transaction">Create new transaction</string>
+    <string name="income">Income</string>
+    <string name="expense">Expense</string>
+    <string name="balance">Balance</string>
+    <string name="group_transactions_by">Group transactions by</string>
+    <string name="go_back_screen">Go to previous screen</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="time_format_12h" translatable="false">hh:mm a</string>
+    <string name="done">Done</string>
+    <string name="enter_amount">Enter Amount</string>
+    <string name="title">Title</string>
+    <string name="note">Note</string>
+    <string name="batch_add">Batch add</string>
+    <string name="select_time">Select Time</string>
 </resources>
