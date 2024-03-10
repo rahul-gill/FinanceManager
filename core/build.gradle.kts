@@ -5,10 +5,10 @@ plugins {
 
 android {
     namespace = "wow.app.core"
-    compileSdk = 34
+    compileSdk = libs.versions.targetCompileSdk.get().toInt()
 
     defaultConfig {
-        minSdk = 24
+        minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -27,24 +27,25 @@ android {
     compileOptions {
 
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugar.libs)
 
-    implementation(libs.androidx.material3.android)
+    implementation(libs.core.ktx)
+    coreLibraryDesugaring(libs.desugar.libs)
+    implementation(libs.compose.material3)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 

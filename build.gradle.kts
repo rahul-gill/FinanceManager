@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.androidTest) apply false
 }
 
 detekt {

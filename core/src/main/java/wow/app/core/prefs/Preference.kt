@@ -2,9 +2,12 @@
 
 package wow.app.core.prefs
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.ObservableSettings
 import com.russhwolf.settings.Settings
+import com.russhwolf.settings.coroutines.getBooleanFlow
 import com.russhwolf.settings.coroutines.getIntFlow
 import com.russhwolf.settings.coroutines.getLongFlow
 import com.russhwolf.settings.coroutines.getStringFlow
@@ -25,27 +28,32 @@ interface Preference<T> {
     val observableValue: StateFlow<T>
     val key: String
     val defaultValue: T
+
+    @Composable
+    fun asState() = observableValue.collectAsState()
 }
 
-fun <T> customPreference(
-    key: String,
+fun <T,BackingT> customPreference(
+    backingPref: Preference<BackingT>,
     defaultValue: T,
-    serialize: (T) -> String,
-    deserialize: (String?) -> T
+    serialize: (T) -> BackingT,
+    deserialize: (BackingT) -> T
 ) = object : Preference<T> {
 
-    override val key = key
+    override val key = backingPref.key
     override val defaultValue = defaultValue
 
     override fun setValue(value: T) {
-        settings.putString(key, serialize(value))
+        backingPref.setValue(serialize(value))
     }
 
     override val value: T
-        get() = deserialize(settings.getStringOrNull(key))
+        get() = deserialize(backingPref.value)
     override val observableValue: StateFlow<T>
-        get() = observableSettings.getStringOrNullFlow(key)
-            .map { deserialize(it) }
+        get() = backingPref.observableValue
+            .map {
+                deserialize(it)
+            }
             .stateIn(GlobalScope, SharingStarted.Eagerly, value)
 }
 
@@ -84,6 +92,23 @@ class IntPreference(
         get() = observableSettings.getIntFlow(key, defaultValue)
             .stateIn(GlobalScope, SharingStarted.Eagerly, value)
 }
+
+class BooleanPreference(
+    override val key: String,
+    override val defaultValue: Boolean
+) : Preference<Boolean> {
+    override fun setValue(value: Boolean) {
+        settings.putBoolean(key, value)
+    }
+
+    override val value: Boolean
+        get() = settings.getBoolean(key, defaultValue)
+
+    override val observableValue: StateFlow<Boolean>
+        get() = observableSettings.getBooleanFlow(key, defaultValue)
+            .stateIn(GlobalScope, SharingStarted.Eagerly, value)
+}
+
 
 class LongPreference(
     override val key: String,

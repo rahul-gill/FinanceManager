@@ -28,17 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navigation.navigate
-import io.github.gill.rahul.financemanager.destinations.CategoryScreenDestination
-import io.github.gill.rahul.financemanager.destinations.CreateAccountScreenDestination
 
 
-@Destination
 @Composable
 fun MoreSettingsScreen(
-    navController: NavController
+    toCreateAccountScreen: () -> Unit,
+    toCategoryScreen: () -> Unit
 ) {
     LazyColumn {
         item {
@@ -64,7 +59,7 @@ fun MoreSettingsScreen(
                         text = "Overall: $1000"
                     )
                 }
-                TextButton(onClick = { navController.navigate(CreateAccountScreenDestination) }) {
+                TextButton(onClick = toCreateAccountScreen) {
                     Text(text = "Add New")
                 }
             }
@@ -88,7 +83,7 @@ fun MoreSettingsScreen(
                 icon = Icons.Default.ShortText,
                 title = "Categories",
                 description = "Add, edit or reorder categories",
-                onClick = { navController.navigate(CategoryScreenDestination) }
+                onClick = toCategoryScreen
             )
         }
         items(5) {

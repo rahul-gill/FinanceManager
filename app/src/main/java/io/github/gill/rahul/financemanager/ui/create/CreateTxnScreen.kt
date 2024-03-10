@@ -76,7 +76,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import io.github.gill.rahul.financemanager.R
+import wow.app.core.R
 import io.github.gill.rahul.financemanager.models.TransactionType
 import io.github.gill.rahul.financemanager.ui.categories.CategoryChipPreview
 import wow.app.core.util.DateTimeUtils

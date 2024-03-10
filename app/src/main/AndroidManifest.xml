@@ -13,16 +13,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinanceManager"
         tools:targetApi="31">
+        <profileable
+            android:shell="true"
+            tools:targetApi="29" />
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.FinanceManager">
+            android:theme="@style/Theme.FinanceManager"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="io.github.gill.rahul.financemanager.ComposeInitializer"
+                android:value="androidx.startup" />
+        </provider>
     </application>
 
 </manifest>

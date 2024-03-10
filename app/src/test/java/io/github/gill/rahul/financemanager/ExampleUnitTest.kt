@@ -1,5 +1,6 @@
 package io.github.gill.rahul.financemanager
 
+import androidx.compose.ui.graphics.Color
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -11,6 +12,8 @@ import org.junit.Test
 class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+        val x = 0xFF9867C5
+        println(x)
+        println(x.toULong())
     }
 }

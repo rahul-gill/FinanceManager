@@ -1,7 +1,7 @@
 package io.github.gill.rahul.financemanager.ui
 
 import androidx.annotation.StringRes
-import io.github.gill.rahul.financemanager.R
+import wow.app.core.R
 import java.time.LocalDate
 
 sealed class DateRangeType {

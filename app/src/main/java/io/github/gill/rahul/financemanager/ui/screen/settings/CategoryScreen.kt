@@ -53,8 +53,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.navigation.NavController
-import com.ramcosta.composedestinations.annotation.Destination
 import io.github.gill.rahul.financemanager.db.Categories
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -62,9 +60,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Destination
 fun CategoryScreen(
-    navController: NavController,
+    navigateUp: () -> Unit,
     onCategoryClick: (categoryId: Long) -> Unit,
     expenseCategories: List<Categories>,
     incomeCategories: List<Categories>,
@@ -80,7 +77,7 @@ fun CategoryScreen(
                     Text(text = "Categories")
                 },
                 navigationIcon = {
-                    IconButton(onClick = navController::navigateUp) {
+                    IconButton(onClick = navigateUp) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "TODO")
                     }
                 }

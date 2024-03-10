@@ -42,7 +42,7 @@ import dev.olshevski.navigation.reimagined.moveToTop
 import dev.olshevski.navigation.reimagined.navigate
 import dev.olshevski.navigation.reimagined.pop
 import dev.olshevski.navigation.reimagined.rememberNavController
-import io.github.gill.rahul.financemanager.R
+import wow.app.core.R
 import io.github.gill.rahul.financemanager.ui.BudgetScreen
 import io.github.gill.rahul.financemanager.ui.create.CreateTxnScreen
 import io.github.gill.rahul.financemanager.ui.HomeScreen
@@ -54,9 +54,6 @@ import wow.app.core.ui.components.TabItem
 import wow.app.core.ui.components.Tabs
 import wow.app.core.ui.materialSharedAxisZIn
 import wow.app.core.ui.materialSharedAxisZOut
-
-private val MinToolbarHeight = 96.dp
-private val MaxToolbarHeight = 176.dp
 
 @Composable
 fun RootNavHost() {
@@ -70,7 +67,10 @@ fun RootNavHost() {
         }
     ) { screen ->
         when (screen) {
-            Screen.Settings -> MoreSettingsScreen()
+            Screen.Settings -> MoreSettingsScreen(
+                onGoBack = { navController.pop() },
+                onAddAccount = {/*TODO*/}
+            )
             Screen.Tabs -> TabsNavHost(
                 toSetting = { navController.navigate(Screen.Settings) },
                 goToCreateTxn = { navController.navigate(Screen.CreateTxn) }
@@ -79,117 +79,6 @@ fun RootNavHost() {
             Screen.CreateTxn -> CreateTxnScreen(onGoBack = { navController.pop() })
         }
     }
-//    val toolbarHeightRange = with(LocalDensity.current) {
-//        MinToolbarHeight.roundToPx()..MaxToolbarHeight.roundToPx()
-//    }
-//
-//
-//    val nestedScrollConnection = remember {
-//        object : NestedScrollConnection {
-//            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-//                return Offset.Zero
-//            }
-//        }
-//    }
-//    Box(modifier = Modifier.nestedScroll(nestedScrollConnection)) {
-//        DestinationsNavHost(
-//            navController = navController,
-//            navGraph = NavGraphs.root,
-//            engine = navHostEngine,
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .graphicsLayer { translationY = toolbarHeightRange.last.toFloat() }
-//                .padding(bottom = MinToolbarHeight)
-//        )
-//        Column(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(MaxToolbarHeight)
-//        ) {
-//            TopAppBar(
-//                title = { Text("Finance Manager") },
-//                actions = {
-//                    IconButton(onClick = { navController.navigate(MoreSettingsScreenDestination) }) {
-//                        Icon(imageVector = Icons.Default.Settings, contentDescription = "TODO")
-//                    }
-//                },
-//
-//                )
-//
-//            val selectedIndex = remember {
-//                mutableIntStateOf(0)
-//            }
-//            ScrollableTabRow(
-//                selectedTabIndex = selectedIndex.intValue,
-//                indicator = {},
-//                divider = {}
-//            ) {
-//                BottomBarDestination.entries.forEachIndexed { index, entry ->
-//                    TabItem(selected = selectedIndex.intValue == index, onClick = {
-//                        selectedIndex.intValue = index
-//                        navController.navigate(entry.direction) {
-//                            launchSingleTop = true
-//                        }
-//                    }, text = stringResource(entry.label))
-//                }
-//            }
-//        }
-//    }
-
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = { Text("Finance Manager") },
-//                actions = {
-//                    IconButton(onClick = { navController.navigate(MoreSettingsScreenDestination) }) {
-//                        Icon(imageVector = Icons.Default.Settings, contentDescription = "TODO")
-//                    }
-//                }
-//            )
-//        },
-//    ) { paddingValues ->
-//        Column(
-//            modifier = Modifier.padding(paddingValues)
-//        ) {
-//            val selectedIndex = remember {
-//                mutableIntStateOf(0)
-//            }
-//
-//            var offset by remember { mutableFloatStateOf(0f) }
-//            Row(
-//                modifier = Modifier.scrollable(
-//                    orientation = Orientation.Horizontal,
-//                    state =  rememberScrollableState { delta ->
-//                        offset += delta
-//                        delta
-//                    }
-//                )
-//            ) {
-//
-//            }
-//            ScrollableTabRow(
-//                selectedTabIndex = selectedIndex.intValue,
-//                indicator = {},
-//                divider = {}
-//            ) {
-//                BottomBarDestination.entries.forEachIndexed { index, entry ->
-//                    TabItem(selected = selectedIndex.intValue == index, onClick = {
-//                        selectedIndex.intValue = index
-//                        navController.navigate(entry.direction) {
-//                            launchSingleTop = true
-//                        }
-//                    }, text = stringResource(entry.label))
-//                }
-//            }
-//            DestinationsNavHost(
-//                navController = navController,
-//                navGraph = NavGraphs.root,
-//                engine = navHostEngine,
-//                modifier = Modifier.weight(1f)
-//            )
-//        }
-//
-//    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -204,6 +93,7 @@ private fun TabsNavHost(
     var transactionGroupType: DateRangeType by remember {
         mutableStateOf(DateRangeType.Daily)
     }
+    //TODO:
     var customRangeLengthDays by remember {
         mutableLongStateOf(10L)
     }

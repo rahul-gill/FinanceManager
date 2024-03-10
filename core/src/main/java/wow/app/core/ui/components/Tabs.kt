@@ -40,7 +40,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import wow.app.core.ui.FinManTheme
 
@@ -76,7 +76,7 @@ fun Tabs(
 }
 
 @Composable
-@Preview
+//@Preview
 private fun preview(){
     val (selected, setSelected) = remember {
         mutableStateOf(0)

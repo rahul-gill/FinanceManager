@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "io.github.gill.rahul.financemanager"
-    compileSdk = 34
+    compileSdk = libs.versions.targetCompileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "io.github.gill.rahul.financemanager"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetCompileSdk.get().toInt()
         versionCode = 1
         versionName = "1.0.0"
 
@@ -24,23 +24,30 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        create("benchmark") {
+            initWith(buildTypes.getByName("release"))
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
         }
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
     packaging {
         resources {
@@ -51,7 +58,7 @@ android {
 
 dependencies {
     implementation(project(":core"))
-    implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.lifecycle.process)
     coreLibraryDesugaring(libs.desugar.libs)
 
     implementation(libs.core.ktx)
@@ -60,7 +67,7 @@ dependencies {
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui.tooling)
-//        implementation(material3)
+    implementation(libs.compose.material3)
     implementation(libs.compose.material.icons.extended)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
@@ -71,14 +78,19 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    implementation("dev.olshevski.navigation:reimagined:1.5.0")
-    implementation("dev.olshevski.navigation:reimagined-material3:1.5.0")
+    implementation(libs.navigation.reimagined)
+    implementation(libs.navigation.reimagined.material3)
 
 
     implementation(libs.sqldelight.android.driver)
     implementation(libs.sqldelight.coroutines)
     implementation(libs.sqldelight.primitive.adapters)
     testImplementation(libs.sqldelight.test.driver)
+
+
+    implementation("androidx.startup:startup-runtime:1.1.1")
+
+    implementation("com.github.skydoves:colorpicker-compose:1.0.7")
 }
 
 sqldelight {

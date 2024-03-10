@@ -25,4 +25,5 @@
     <string name="note">टिप्पणी तथा अन्य जानकारी</string>
     <string name="batch_add">और भी जोडें</string>
     <string name="select_time">समय चुनें</string>
+    <string name="settings">Settings</string>
 </resources>

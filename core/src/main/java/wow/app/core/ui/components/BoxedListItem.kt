@@ -19,7 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
@@ -65,7 +65,7 @@ fun BoxedListItem(
 
 
 @Composable
-@Preview
+//@Preview
 private fun BoxedListItemPreview() {
     Column(Modifier.padding(vertical = 8.dp)) {
         for (i in 0..10) {

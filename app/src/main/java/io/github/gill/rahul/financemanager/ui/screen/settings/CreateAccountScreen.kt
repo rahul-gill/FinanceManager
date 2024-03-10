@@ -1,10 +1,8 @@
 package io.github.gill.rahul.financemanager.ui.screen.settings
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,24 +34,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.ramcosta.composedestinations.annotation.Destination
-import io.github.gill.rahul.financemanager.ui.MoneyManagerPreviews
-import io.github.gill.rahul.financemanager.ui.PreviewWrapper
-import io.github.gill.rahul.financemanager.ui.getContentColorForBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Destination
 fun CreateAccountScreen(
-    navController: NavController
+    onSave: () -> Unit,
+    navigateUp: () -> Unit
 ) {
     //TODO
-    val onSave = {}
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,7 +52,7 @@ fun CreateAccountScreen(
                     Text(text = "Add new Account")
                 },
                 navigationIcon = {
-                    IconButton(onClick = navController::navigateUp) {
+                    IconButton(onClick = navigateUp) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "TODO")
                     }
                 }
@@ -126,13 +116,14 @@ fun CreateAccountScreen(
                 )
             }
             item(span = fullLineSpan) {
-                ColorSelection(
-                    color = color,
-                    showColorPicker = {
-                        colorPickerShowing = true
-                    },
-                    setColor = setColor
-                )
+                //TODO
+//                ColorSelection(
+//                    color = color,
+//                    showColorPicker = {
+//                        colorPickerShowing = true
+//                    },
+//                    setColor = setColor
+//                )
             }
             item(span = fullLineSpan) {
                 Row(
@@ -150,7 +141,7 @@ fun CreateAccountScreen(
                             .size(24.dp),
                         painter = painterResource(id = IconsMap.collection[iconCategoryKey]!![iconKey]!!),
                         contentDescription = null,
-                        tint = getContentColorForBackground(color)
+                        //TODO: tint = getContentColorForBackground(color)
                     )
                 }
             }
@@ -180,7 +171,7 @@ fun CreateAccountScreen(
                                 },
                             painter = painterResource(resValue),
                             contentDescription = null,
-                            tint = getContentColorForBackground(backColor)
+                            //TODO: tint = getContentColorForBackground(backColor)
                         )
                     }
                 }
@@ -190,21 +181,12 @@ fun CreateAccountScreen(
             }
         }
         if(colorPickerShowing){
-            CustomColorPickerDialog(
-                onDismiss = { colorPickerShowing = false },
-                initialColor = color,
-                onColorSelection = setColor,
-            )
-        }
-    }
-}
-
-@MoneyManagerPreviews
-@Composable
-private fun ColorSelectorItemPreview() {
-    PreviewWrapper {
-        Column(Modifier.size(200.dp)) {
-            CreateAccountScreen(NavController(LocalContext.current))
+            //TODO:
+//            CustomColorPickerDialog(
+//                onDismiss = { colorPickerShowing = false },
+//                initialColor = color,
+//                onColorSelection = setColor,
+//            )
         }
     }
 }

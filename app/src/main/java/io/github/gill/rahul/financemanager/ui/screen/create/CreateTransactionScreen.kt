@@ -41,13 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
-import com.ramcosta.composedestinations.annotation.Destination
-import io.github.gill.rahul.financemanager.ui.MoneyManagerPreviews
-import io.github.gill.rahul.financemanager.ui.PreviewWrapper
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Destination
 fun CreateTransactionScreen() {
     val accountIcon by remember {
         mutableStateOf(Icons.Default.Wallet)
@@ -207,13 +202,5 @@ private fun TopBar(
                 Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "TODO")
             }
         }
-    }
-}
-
-@Composable
-@MoneyManagerPreviews
-private fun CreateTransactionScreenPreview() {
-    PreviewWrapper {
-        CreateTransactionScreen()
     }
 }

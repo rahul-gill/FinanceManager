@@ -39,10 +39,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.gill.rahul.financemanager.R
+import wow.app.core.R
 import wow.app.core.ui.components.BoxedListItem
 import wow.app.core.ui.components.BoxedListItemType
 import java.time.LocalDate
@@ -312,7 +313,7 @@ fun HomeScreen(
 
             val monthFormat =
                 DateTimeFormatter.ofPattern(stringResource(id = R.string.format_month))
-            LazyColumn(state = state) {
+            LazyColumn(state = state, modifier = Modifier.testTag("dashboard:transaction_list")) {
                 items(
                     items = lists,
                     contentType = { item ->
