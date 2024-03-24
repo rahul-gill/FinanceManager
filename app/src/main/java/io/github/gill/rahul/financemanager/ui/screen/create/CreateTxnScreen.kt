@@ -1,4 +1,4 @@
-package io.github.gill.rahul.financemanager.ui.create
+package io.github.gill.rahul.financemanager.ui.screen.create
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -78,12 +78,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import wow.app.core.R
 import io.github.gill.rahul.financemanager.models.TransactionType
-import io.github.gill.rahul.financemanager.ui.categories.CategoryChipPreview
+import io.github.gill.rahul.financemanager.ui.screen.categories.CategoryChipPreview
 import wow.app.core.util.DateTimeUtils
-import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 

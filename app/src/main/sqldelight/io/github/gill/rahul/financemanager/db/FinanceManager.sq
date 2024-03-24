@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS Categories (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     uiPropertiesId INTEGER NOT NULL,
+    isExpenseCategory INTEGER  AS Boolean NOT NULL,
     FOREIGN KEY (uiPropertiesId) REFERENCES UiProperties(id)
 );
 
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS UiProperties(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     color INTEGER NOT NULL,
     icon TEXT NOT NULL,
-    orderNum REAL NOT NULL
+    orderNum INTEGER NOT NULL
 );
 
 -- Accounts Queries
@@ -126,17 +127,57 @@ WHERE id = :transctionID;
 
 -- Categories queries
 creatCategory:
-INSERT INTO Categories (name, uiPropertiesId)
-VALUES (?, ?);
+INSERT INTO Categories (name, uiPropertiesId, isExpenseCategory)
+VALUES (?, ?, ?);
+
+getHighestOrderNum:
+SELECT uiProp.orderNum FROM Categories cat, UiProperties uiProp
+WHERE cat.uiPropertiesId = uiProp.id
+ORDER BY uiProp.orderNum
+LIMIT 1;
 
 getCategoryById:
 SELECT * FROM Categories WHERE id = :categoryId;
 
-getAllCategories:
-SELECT * FROM Categories;
+getAllExpenseCategories:
+SELECT Categories.*, UiProperties.*  FROM Categories, UiProperties
+WHERE isExpenseCategory = 1 AND Categories.uiPropertiesId = UiProperties.id
+ORDER BY UiProperties.orderNum;
+
+getAllIncomeCategories:
+SELECT Categories.*, UiProperties.*  FROM Categories, UiProperties
+WHERE isExpenseCategory = 0 AND Categories.uiPropertiesId = UiProperties.id
+ORDER BY UiProperties.orderNum;
 
 deletCategory:
 DELETE FROM Categories WHERE id = :categoryId;
+
+
+
+changdRows:
+SELECT CHANGES();
+
+updateCategoriesOrderSimple:
+UPDATE UiProperties
+SET orderNum = :newOrderNum
+WHERE
+UiProperties.id IN (SELECT Categories.uiPropertiesId FROM Categories WHERE Categories.id = :categoryId);
+
+updateCategoriesOrder:
+UPDATE UiProperties
+SET orderNum = CASE
+   WHEN orderNum = :fromIndex THEN :toIndex
+   WHEN (:fromIndex - :toIndex) > 0 THEN orderNum + 1
+   ELSE orderNum - 1
+END
+WHERE
+UiProperties.id IN (SELECT Categories.uiPropertiesId FROM Categories) AND
+CASE
+    WHEN (:fromIndex - :toIndex) > 0 THEN
+        UiProperties.orderNum >= :toIndex AND UiProperties.orderNum <= :fromIndex
+    ELSE
+        UiProperties.orderNum <= :toIndex AND UiProperties.orderNum >= :fromIndex
+END;
 
 updateCategoryName:
 UPDATE Categories
@@ -157,6 +198,19 @@ WHERE UiProperties.id = (SELECT uiPropertiesId FROM Categories WHERE Categories.
 createUiProperty:
 INSERT INTO UiProperties (color, icon, orderNum)
 VALUES (?, ?, ?);
+
+
+createUiPropertyForCategory:
+INSERT INTO UiProperties (color, icon, orderNum)
+VALUES (
+?,
+?,
+ COALESCE(1 + (SELECT UiProperties.orderNum FROM UiProperties, Categories WHERE Categories.uiPropertiesId = UiProperties.id ORDER BY UiProperties.orderNum DESC LIMIT 1), 0)
+);
+
+tempQ:
+SELECT UiProperties.orderNum FROM UiProperties, Categories WHERE Categories.uiPropertiesId = UiProperties.id ORDER BY UiProperties.orderNum DESC LIMIT 1;
+
 
 getUiPropertyById:
 SELECT * FROM UiProperties WHERE id = :uiPropertyId;

@@ -8,8 +8,7 @@ import java.time.ZoneId
 object DateTimeUtils {
 
     fun dateTimeToMillis(dt: LocalDateTime): Long {
-
-        return LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        return dt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
 
     fun localDateFromMillis(millis: Long): LocalDate {

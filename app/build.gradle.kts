@@ -29,6 +29,9 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("debug")
         }
+        debug {
+            applicationIdSuffix = ".debug"
+        }
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
             matchingFallbacks += listOf("release")
@@ -58,7 +61,6 @@ android {
 
 dependencies {
     implementation(project(":core"))
-    implementation(libs.androidx.lifecycle.process)
     coreLibraryDesugaring(libs.desugar.libs)
 
     implementation(libs.core.ktx)
@@ -88,9 +90,8 @@ dependencies {
     testImplementation(libs.sqldelight.test.driver)
 
 
-    implementation("androidx.startup:startup-runtime:1.1.1")
-
-    implementation("com.github.skydoves:colorpicker-compose:1.0.7")
+    implementation(libs.colorpicker.compose)
+    implementation(libs.reorderable)
 }
 
 sqldelight {

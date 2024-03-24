@@ -10,7 +10,7 @@ class AccountsOperations(
         name: String,
         color: Long,
         icon: String,
-        orderNum: Double,
+        orderNum: Long,
         startingBalance: Long,
         includeInTotalBalance: Boolean
     ): Long {
@@ -75,7 +75,7 @@ class AccountsOperations(
         accountId: Long,
         color: Long,
         icon: String,
-        orderNum: Double
+        orderNum: Long
     ) = q.updateAccountUiDetails(color, icon, orderNum, accountId)
 
     fun updateAccountStartingBalance(

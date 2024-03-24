@@ -44,14 +44,19 @@ android {
 dependencies {
 
     implementation(libs.core.ktx)
+    implementation(libs.lifecycle.process)
+    implementation(libs.lifecycle.runtime.compose)
     coreLibraryDesugaring(libs.desugar.libs)
     implementation(libs.compose.material3)
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
 
 
-    implementation(libs.multiplatform.settings.no.arg)
-    implementation(libs.multiplatform.settings.coroutines)
+
+    implementation(libs.androidx.startup.runtime)
+
+    implementation(libs.androidx.datastore.preferences)
+
 
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
 

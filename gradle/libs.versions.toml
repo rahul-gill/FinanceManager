@@ -1,4 +1,7 @@
 [versions]
+colorpickerCompose = "1.0.7"
+datastorePreferences = "1.0.0"
+startupRuntime = "1.1.1"
 targetCompileSdk = "34"
 minSdk = "24"
 appVersionCode = "1"
@@ -10,21 +13,23 @@ core-ktx = "1.12.0"
 junit = "4.13.2"
 androidx-test-ext-junit = "1.1.5"
 espresso-core = "3.5.1"
-lifecycle-runtime-ktx = "2.7.0"
+lifecycle = "2.7.0"
 activity-compose = "1.8.2"
-compose-bom = "2024.02.02"
+compose-bom = "2024.03.00"
 detekt = "1.23.1"
 compose-compiler = "1.5.11-dev-k2.0.0-Beta4-21f5e479a96"
-multiplatform-settings = "1.1.1"
-sqldelight = "2.0.0"
+sqldelight = "2.0.1"
 twitter-detekt = "0.0.26"
 navigation-reimagined = "1.5.0"
-lifecycleProcess = "2.7.0"
-uiautomator = "2.2.0"
-benchmark-macro-junit4 = "1.2.0-beta01"
+uiautomator = "2.3.0"
+benchmark-macro-junit4 = "1.2.3"
+reorderable = "1.3.3"
 
 
 [libraries]
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startupRuntime" }
+colorpicker-compose = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpickerCompose" }
 detekt-compose-rules = { module = "com.twitter.compose.rules:detekt", version.ref = "twitter-detekt" }
 navigation-reimagined = { module = "dev.olshevski.navigation:reimagined", version.ref = "navigation-reimagined" }
 navigation-reimagined-material3 = { module = "dev.olshevski.navigation:reimagined-material3", version.ref = "navigation-reimagined" }
@@ -38,19 +43,22 @@ desugar-libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "d
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle" }
+lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatform-settings" }
-multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleProcess" }
 uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmark-macro-junit4" }
+
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

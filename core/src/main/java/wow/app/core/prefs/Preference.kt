@@ -1,39 +1,45 @@
-@file:OptIn(ExperimentalSettingsApi::class, DelicateCoroutinesApi::class)
-
 package wow.app.core.prefs
 
+import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import com.russhwolf.settings.ExperimentalSettingsApi
-import com.russhwolf.settings.ObservableSettings
-import com.russhwolf.settings.Settings
-import com.russhwolf.settings.coroutines.getBooleanFlow
-import com.russhwolf.settings.coroutines.getIntFlow
-import com.russhwolf.settings.coroutines.getLongFlow
-import com.russhwolf.settings.coroutines.getStringFlow
-import com.russhwolf.settings.coroutines.getStringOrNullFlow
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.runBlocking
+import wow.app.core.startup.applicationContextGlobal
 
-val settings: Settings by lazy { Settings() }
-val observableSettings: ObservableSettings by lazy { settings as ObservableSettings }
+
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 interface Preference<T> {
     fun setValue(value: T)
-    val value: T
-    val observableValue: StateFlow<T>
     val key: String
     val defaultValue: T
+    val observableValue: Flow<T>
+    val value: T
+        get() = runBlocking {
+            observableValue.firstOrNull() ?: defaultValue
+        }
 
     @Composable
-    fun asState() = observableValue.collectAsState()
+    fun asState() = observableValue.collectAsStateWithLifecycle(initialValue = value)
+
+
 }
 
-fun <T,BackingT> customPreference(
+/**
+ * Handle default values carefully, just like in enumPreference
+ */
+fun <T, BackingT> customPreference(
     backingPref: Preference<BackingT>,
     defaultValue: T,
     serialize: (T) -> BackingT,
@@ -42,71 +48,69 @@ fun <T,BackingT> customPreference(
 
     override val key = backingPref.key
     override val defaultValue = defaultValue
+    override val observableValue: Flow<T>
+        get() = backingPref.observableValue.map(deserialize)
 
     override fun setValue(value: T) {
         backingPref.setValue(serialize(value))
     }
-
-    override val value: T
-        get() = deserialize(backingPref.value)
-    override val observableValue: StateFlow<T>
-        get() = backingPref.observableValue
-            .map {
-                deserialize(it)
-            }
-            .stateIn(GlobalScope, SharingStarted.Eagerly, value)
 }
 
 inline fun <reified T : Enum<T>> enumPreference(
     key: String,
     defaultValue: T
-) = object : Preference<T> {
+) = customPreference(
+    backingPref = IntPreference(key, Int.MAX_VALUE),
+    defaultValue,
+    serialize = { it.ordinal },
+    deserialize = {
+        if (it == Int.MAX_VALUE) {
+            defaultValue
+        } else {
+            enumValues<T>().getOrNull(it) ?: defaultValue
 
-    override val key = key
-    override val defaultValue = defaultValue
-
-    override fun setValue(value: T) {
-        settings.putInt(key, value.ordinal)
+        }
     }
-
-    override val value: T
-        get() = enumValues<T>()[settings.getInt(key, defaultValue.ordinal)]
-    override val observableValue: StateFlow<T>
-        get() = observableSettings.getIntFlow(key, defaultValue.ordinal)
-            .map { enumValues<T>()[it] }
-            .stateIn(GlobalScope, SharingStarted.Eagerly, value)
-}
+)
 
 class IntPreference(
     override val key: String,
     override val defaultValue: Int
 ) : Preference<Int> {
+
+    private val backingKey = intPreferencesKey(key)
     override fun setValue(value: Int) {
-        settings.putInt(key, value)
+        runBlocking {
+            applicationContextGlobal.dataStore.edit { prefs ->
+                prefs[backingKey] = value
+            }
+        }
     }
 
-    override val value: Int
-        get() = settings.getInt(key, defaultValue)
-
-    override val observableValue: StateFlow<Int>
-        get() = observableSettings.getIntFlow(key, defaultValue)
-            .stateIn(GlobalScope, SharingStarted.Eagerly, value)
+    override val observableValue: Flow<Int>
+        get() = applicationContextGlobal.dataStore.data.map { pref ->
+            pref[backingKey] ?: defaultValue
+        }
 }
 
 class BooleanPreference(
     override val key: String,
     override val defaultValue: Boolean
 ) : Preference<Boolean> {
+
+    private val backingKey = booleanPreferencesKey(key)
     override fun setValue(value: Boolean) {
-        settings.putBoolean(key, value)
+        runBlocking {
+            applicationContextGlobal.dataStore.edit { prefs ->
+                prefs[backingKey] = value
+            }
+        }
     }
 
-    override val value: Boolean
-        get() = settings.getBoolean(key, defaultValue)
-
-    override val observableValue: StateFlow<Boolean>
-        get() = observableSettings.getBooleanFlow(key, defaultValue)
-            .stateIn(GlobalScope, SharingStarted.Eagerly, value)
+    override val observableValue: Flow<Boolean>
+        get() = applicationContextGlobal.dataStore.data.map { pref ->
+            pref[backingKey] ?: defaultValue
+        }
 }
 
 
@@ -114,30 +118,38 @@ class LongPreference(
     override val key: String,
     override val defaultValue: Long
 ) : Preference<Long> {
+
+    private val backingKey = longPreferencesKey(key)
     override fun setValue(value: Long) {
-        settings.putLong(key, value)
+        runBlocking {
+            applicationContextGlobal.dataStore.edit { prefs ->
+                prefs[backingKey] = value
+            }
+        }
     }
 
-    override val value: Long
-        get() = settings.getLong(key, defaultValue)
-
-    override val observableValue: StateFlow<Long>
-        get() = observableSettings.getLongFlow(key, defaultValue)
-            .stateIn(GlobalScope, SharingStarted.Eagerly, value)
+    override val observableValue: Flow<Long>
+        get() = applicationContextGlobal.dataStore.data.map { pref ->
+            pref[backingKey] ?: defaultValue
+        }
 }
 
 class StringPreference(
     override val key: String,
     override val defaultValue: String
 ) : Preference<String> {
+
+    private val backingKey = stringPreferencesKey(key)
     override fun setValue(value: String) {
-        settings.putString(key, value)
+        runBlocking {
+            applicationContextGlobal.dataStore.edit { prefs ->
+                prefs[backingKey] = value
+            }
+        }
     }
 
-    override val value: String
-        get() = settings.getString(key, defaultValue)
-
-    override val observableValue: StateFlow<String>
-        get() = observableSettings.getStringFlow(key, defaultValue)
-            .stateIn(GlobalScope, SharingStarted.Eagerly, value)
+    override val observableValue: Flow<String>
+        get() = applicationContextGlobal.dataStore.data.map { pref ->
+            pref[backingKey] ?: defaultValue
+        }
 }

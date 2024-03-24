@@ -46,6 +46,7 @@ fun BaseDialog(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     properties: DialogProperties = DialogProperties(
+        dismissOnClickOutside = true,
         usePlatformDefaultWidth = false
     ),
     onDismissRequest: () -> Unit,
@@ -58,9 +59,7 @@ fun BaseDialog(
         properties = properties,
     ) {
         (LocalView.current.parent as? DialogWindowProvider)?.window?.run {
-            setDimAmount(
-                BaseDialogDefaults.dimAmount
-            )
+            setDimAmount(BaseDialogDefaults.dimAmount)
             setGravity(Gravity.BOTTOM)
         }
         Box(
@@ -99,24 +98,25 @@ private fun AlertDialogPreview() {
             }
         }
     }
-    if(show)
-    AlertDialog(
-        onDismissRequest = {show = false },
-        title = { Text(text = "Alert Dialog Title") },
-        body = {
+    if(show){
+        AlertDialog(
+            onDismissRequest = {show = false },
+            title = { Text(text = "Alert Dialog Title") },
+            body = {
                 Text(text = "Some text ", modifier = Modifier.padding(8.dp))
 
-        },
-        buttonBar = {
-            Button(onClick = { show = false }) {
-                Text(text = "Cancel")
-            }
+            },
+            buttonBar = {
+                Button(onClick = { show = false }) {
+                    Text(text = "Cancel")
+                }
 
-            Button(onClick = { show = false }) {
-                Text(text = "OK")
+                Button(onClick = { show = false }) {
+                    Text(text = "OK")
+                }
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable

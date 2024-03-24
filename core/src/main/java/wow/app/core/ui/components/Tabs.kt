@@ -65,13 +65,6 @@ fun Tabs(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         tabs()
-        IconButton(onClick = {}){
-            Icon(
-                imageVector = Icons.Default.Menu,
-                contentDescription = "TODO",
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
     }
 }
 

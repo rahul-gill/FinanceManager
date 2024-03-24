@@ -29,15 +29,6 @@
             </intent-filter>
         </activity>
 
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="io.github.gill.rahul.financemanager.ComposeInitializer"
-                android:value="androidx.startup" />
-        </provider>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package io.github.gill.rahul.financemanager.ui.categories
+package io.github.gill.rahul.financemanager.ui.screen.categories
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

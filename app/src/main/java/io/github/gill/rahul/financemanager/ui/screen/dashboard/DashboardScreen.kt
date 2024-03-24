@@ -1,5 +1,10 @@
-package io.github.gill.rahul.financemanager.ui
+package io.github.gill.rahul.financemanager.ui.screen.dashboard
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,8 +27,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -33,7 +36,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,9 +48,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.gill.rahul.financemanager.ui.DateRangeType
+import kotlinx.coroutines.delay
 import wow.app.core.R
-import wow.app.core.ui.components.BoxedListItem
-import wow.app.core.ui.components.BoxedListItemType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -64,7 +69,7 @@ data class TxnItem(
 
 sealed class HeaderListItem {
     class Header(val value: LocalDate) : HeaderListItem()
-    class Item(val value: TxnItem, val type: BoxedListItemType) : HeaderListItem()
+    class Item(val value: TxnItem) : HeaderListItem()
 }
 
 val lists: List<HeaderListItem> = listOf(
@@ -77,8 +82,8 @@ val lists: List<HeaderListItem> = listOf(
             LocalDateTime.now(),
             "- $ 100"
         ),
-        type = BoxedListItemType.First
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "घर आते टाइम",
@@ -87,8 +92,8 @@ val lists: List<HeaderListItem> = listOf(
             LocalDateTime.now().minusHours(10),
             "- $ 5"
         ),
-        type = BoxedListItemType.Middle
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "खाना",
@@ -97,106 +102,106 @@ val lists: List<HeaderListItem> = listOf(
             LocalDateTime.now().minusDays(15),
             "- $ 54.90"
         ),
-        type = BoxedListItemType.Last
-    ),
-    HeaderListItem.Header(LocalDate.now().minusDays(1)),
+
+        ),
+    HeaderListItem.Header(LocalDate.now().minusMonths(1)),
     HeaderListItem.Item(
         TxnItem(
             "चाय",
             Color.Cyan,
             "खाने का सामान",
-            LocalDateTime.now().minusDays(1),
+            LocalDateTime.now().minusMonths(1),
             "- $ 100"
         ),
-        type = BoxedListItemType.First
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "घर आते टाइम",
             Color.Blue,
             "परिवहन",
-            LocalDateTime.now().minusDays(1).minusHours(10),
+            LocalDateTime.now().minusMonths(1).minusHours(10),
             "- $ 5"
         ),
-        type = BoxedListItemType.Middle
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "खाना",
             Color.Cyan,
             "खाने का सामान",
-            LocalDateTime.now().minusDays(1).minusDays(15),
+            LocalDateTime.now().minusMonths(1).minusDays(15),
             "- $ 54.90"
         ),
-        type = BoxedListItemType.Middle
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "खाना",
             Color.Cyan,
             "खाने का सामान",
-            LocalDateTime.now().minusDays(1).minusDays(15),
+            LocalDateTime.now().minusMonths(1).minusDays(15),
             "- $ 54.90"
         ),
-        type = BoxedListItemType.Middle
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "खाना",
             Color.Cyan,
             "खाने का सामान",
-            LocalDateTime.now().minusDays(1).minusDays(15),
+            LocalDateTime.now().minusMonths(1).minusDays(15),
             "- $ 54.90"
         ),
-        type = BoxedListItemType.Middle
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "खाना",
             Color.Cyan,
             "खाने का सामान",
-            LocalDateTime.now().minusDays(1).minusDays(15),
+            LocalDateTime.now().minusMonths(1).minusDays(15),
             "- $ 54.90"
         ),
-        type = BoxedListItemType.Middle
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "खाना",
             Color.Cyan,
             "खाने का सामान",
-            LocalDateTime.now().minusDays(1).minusDays(15),
+            LocalDateTime.now().minusMonths(1).minusDays(15),
             "- $ 54.90"
         ),
-        type = BoxedListItemType.Middle
-    ),
+
+        ),
     HeaderListItem.Item(
         TxnItem(
             "खाना",
             Color.Cyan,
             "खाने का सामान",
-            LocalDateTime.now().minusDays(1).minusDays(15),
+            LocalDateTime.now().minusMonths(1).minusDays(15),
             "- $ 54.90"
         ),
-        type = BoxedListItemType.Last
-    ),
+
+        ),
     HeaderListItem.Header(LocalDate.now().minusDays(2)),
     HeaderListItem.Item(
         TxnItem(
             "खाना",
             Color.Cyan,
             "खाने का सामान",
-            LocalDateTime.now().minusDays(2).minusDays(15),
+            LocalDateTime.now().minusMonths(2).minusDays(15),
             "- $ 54.90"
         ),
-        type = BoxedListItemType.Single
-    ),
+
+        ),
 )
 
 @Composable
 @Preview(showBackground = true)
 private fun HomeScreenPreview() {
-    HomeScreen(
+    DashboardScreen(
         modifier = Modifier,
         transactionGroupType = DateRangeType.All,
         customRangeLengthDays = 5,
@@ -206,7 +211,7 @@ private fun HomeScreenPreview() {
 }
 
 @Composable
-fun HomeScreen(
+fun DashboardScreen(
     modifier: Modifier = Modifier,
     transactionGroupType: DateRangeType,
     customRangeLengthDays: Long,
@@ -304,32 +309,38 @@ fun HomeScreen(
                 }
             }
         }
-        Box(
-            Modifier
-                .padding(horizontal = 16.dp)
-                .clip(RoundedCornerShape(25.dp))
-        ) {
+        Box {
             val state = rememberLazyListState()
-
+            val shouldHeaderBeVisible = remember {
+                mutableStateOf(false)
+            }
+            LaunchedEffect(state.isScrollInProgress) {
+                if (state.isScrollInProgress) {
+                    shouldHeaderBeVisible.value = true
+                } else {
+                    delay(2000)
+                    shouldHeaderBeVisible.value = false
+                }
+            }
             val monthFormat =
                 DateTimeFormatter.ofPattern(stringResource(id = R.string.format_month))
             LazyColumn(state = state, modifier = Modifier.testTag("dashboard:transaction_list")) {
-                items(
+                itemsIndexed(
                     items = lists,
-                    contentType = { item ->
+                    contentType = { _, item ->
                         when (item) {
                             is HeaderListItem.Header -> "Header"
                             is HeaderListItem.Item -> "Item"
                         }
                     },
-                    key = { item ->
+                    key = { _, item ->
                         when (item) {
                             is HeaderListItem.Header -> "${item.value}"
                             is HeaderListItem.Item -> item.value.id
                         }
                     }
 
-                ) { item ->
+                ) { index, item ->
                     when (item) {
                         is HeaderListItem.Header -> {
                             Text(
@@ -345,40 +356,36 @@ fun HomeScreen(
 
                         is HeaderListItem.Item -> {
                             val txn = item.value
-                            val type = item.type
 
-                            BoxedListItem(
+                            TransactionItem(
                                 modifier = Modifier
                                     .clickable {
                                         //do Some TODO
-                                    },
-                                type = type
-                            ) {
-                                TransactionItem(
-                                    modifier = Modifier.padding(8.dp),
-                                    title = txn.title,
-                                    subtitle = remember(txn.categoryName, txn.dateTime) {
-                                        "${txn.categoryName} / ${
-                                            txn.dateTime.format(
-                                                DateTimeFormatter.ofPattern("dd MMMM hh:mm")
-                                            )
-                                        }"
-                                    },
-                                    sideProminentText = txn.txnAmountFormatted,
-                                    categoryColor = Random(System.currentTimeMillis()).nextBoolean()
-                                        .run {
-                                            if (this) Color.Cyan else Color.Magenta
-                                        },
-                                    icon = {
-                                        Icon(
-                                            imageVector = Icons.Default.Favorite,
-                                            contentDescription = null,
-                                            tint = Color.Black
-                                        )
                                     }
-                                )
-                            }
-                            if (type == BoxedListItemType.First || type == BoxedListItemType.Middle) {
+                                    .padding(vertical = 8.dp, horizontal = 16.dp),
+                                title = txn.title,
+                                subtitle = remember(txn.categoryName, txn.dateTime) {
+                                    "${txn.categoryName} / ${
+                                        txn.dateTime.format(
+                                            DateTimeFormatter.ofPattern("dd MMMM hh:mm")
+                                        )
+                                    }"
+                                },
+                                sideProminentText = txn.txnAmountFormatted,
+                                categoryColor = Random(System.currentTimeMillis()).nextBoolean()
+                                    .run {
+                                        if (this) Color.Cyan else Color.Magenta
+                                    },
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Default.Favorite,
+                                        contentDescription = null,
+                                        tint = Color.Black
+                                    )
+                                }
+                            )
+
+                            if (index < lists.lastIndex) {
                                 Spacer(
                                     modifier = Modifier
                                         .height(1.dp)
@@ -397,20 +404,30 @@ fun HomeScreen(
             val header = remember {
                 derivedStateOf {
                     when (val item = lists[state.firstVisibleItemIndex]) {
-                        is HeaderListItem.Header -> null
+                        is HeaderListItem.Header -> {
+                            (lists[state.firstVisibleItemIndex + 1] as HeaderListItem.Item).value.dateTime.format(
+                                monthFormat
+                            )
+                        }
+
                         is HeaderListItem.Item -> {
                             item.value.dateTime.format(monthFormat)
                         }
                     }
                 }
             }
-            if (header.value != null) {
+            androidx.compose.animation.AnimatedVisibility(
+                visible = shouldHeaderBeVisible.value,
+                enter = fadeIn() + slideInVertically(),
+                exit = slideOutVertically() + fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 4.dp)
+            ) {
                 Surface(
+                    modifier = Modifier.animateContentSize(),
                     color = MaterialTheme.colorScheme.secondary,
                     shape = RoundedCornerShape(50),
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 4.dp)
                 ) {
                     Text(
                         text = header.value!!,

@@ -1,13 +1,15 @@
-package io.github.gill.rahul.financemanager
+package wow.app.core.startup
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.ProcessLifecycleInitializer
 import androidx.startup.Initializer
 
-class ComposeInitializer : Initializer<Unit> {
+internal class ComposeInitializer : Initializer<Unit> {
     override fun create(context: Context) {
-        ComposeView(context) // Initializes the component
+        ComposeView(context)
+        Log.i("ComposeInitializer", "init done")
     }
 
     override fun dependencies(): List<Class<out Initializer<*>>> {
