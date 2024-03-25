@@ -1,6 +1,7 @@
 package wow.app.core.ui.components
 
 import android.view.Gravity
+import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -176,7 +177,7 @@ object BaseDialogDefaults {
         size = 26.dp
     )
 
-    const val dimAmount = 0.2F
+    const val dimAmount = 0.65F
 
     val elevation = 1.dp
 

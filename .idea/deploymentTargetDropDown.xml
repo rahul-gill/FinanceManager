@@ -2,21 +2,6 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="AlertDialogPreview">
-        <State />
-      </entry>
-      <entry key="BoxedListItemPreview">
-        <State />
-      </entry>
-      <entry key="CategoryChipPreview">
-        <State />
-      </entry>
-      <entry key="CategoryOrganizeScreenPreview">
-        <State />
-      </entry>
-      <entry key="SwitchPreferencePreview">
-        <State />
-      </entry>
       <entry key="app">
         <State />
       </entry>

@@ -208,6 +208,14 @@ VALUES (
  COALESCE(1 + (SELECT UiProperties.orderNum FROM UiProperties, Categories WHERE Categories.uiPropertiesId = UiProperties.id ORDER BY UiProperties.orderNum DESC LIMIT 1), 0)
 );
 
+createUiPropertyForAccount:
+INSERT INTO UiProperties (color, icon, orderNum)
+VALUES (
+?,
+?,
+ COALESCE(1 + (SELECT UiProperties.orderNum FROM UiProperties, Accounts WHERE Accounts.uiPropertiesId = UiProperties.id ORDER BY UiProperties.orderNum DESC LIMIT 1), 0)
+);
+
 tempQ:
 SELECT UiProperties.orderNum FROM UiProperties, Categories WHERE Categories.uiPropertiesId = UiProperties.id ORDER BY UiProperties.orderNum DESC LIMIT 1;
 

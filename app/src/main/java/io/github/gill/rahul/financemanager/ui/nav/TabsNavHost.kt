@@ -18,9 +18,11 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShapeLine
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,19 +76,9 @@ import wow.app.core.ui.materialSharedAxisZOut
 fun TabsNavHost(
     toSetting: () -> Unit,
     goToCreateTxn: () -> Unit,
-    goToCategories: () -> Unit
+    goToCategories: () -> Unit,
+    goToAccounts: () -> Unit
 ) {
-    val bottomSheetController = rememberNavController<Unit>(
-        initialBackstack = emptyList()
-    )
-    var transactionGroupType: DateRangeType by remember {
-        mutableStateOf(DateRangeType.Daily)
-    }
-    //TODO:
-    var customRangeLengthDays by remember {
-        mutableLongStateOf(10L)
-    }
-
     val navController = rememberNavController(TabScreen.Dashboard)
     var showMoreTabsDialog by remember {
         mutableStateOf(false)
@@ -147,7 +139,6 @@ fun TabsNavHost(
             }
         }
     ) { paddingValues ->
-        val paddingModifier = Modifier.padding(paddingValues)
 
         AnimatedNavHost(
             modifier = Modifier.padding(paddingValues),
@@ -159,23 +150,15 @@ fun TabsNavHost(
         ) { tab ->
             when (tab) {
                 TabScreen.Dashboard -> DashboardScreen(
-                    modifier = paddingModifier,
-                    goToCreateTxn = goToCreateTxn,
-                    customRangeLengthDays = customRangeLengthDays,
-                    transactionGroupType = transactionGroupType,
-                    showDateRangeChooser = { bottomSheetController.navigate(Unit) }
+                    goToCreateTxn = goToCreateTxn
                 )
 
-                TabScreen.Budget -> BudgetScreen(paddingModifier)
-                TabScreen.Stats -> StatsScreen(paddingModifier)
-                TabScreen.More -> SomeOtherScreen(paddingModifier)
+                TabScreen.Budget -> BudgetScreen()
+                TabScreen.Stats -> StatsScreen()
+                TabScreen.More -> SomeOtherScreen()
             }
         }
     }
-    NavBackHandler(
-        controller = bottomSheetController,
-        allowEmptyBackstack = true
-    )
     if (showMoreTabsDialog) {
         BaseDialog(
             onDismissRequest = { showMoreTabsDialog = false }
@@ -185,70 +168,8 @@ fun TabsNavHost(
                 horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically)
             ) {
-                MoreNavItem(text = "Categories", onClick = goToCategories, icon = rememberVectorPainter(image = Icons.Default.Paid))
-            }
-        }
-    }
-    BottomSheetNavHost(
-        controller = bottomSheetController,
-        onDismissRequest = { bottomSheetController.pop() }
-    ) {
-        Surface(
-            tonalElevation = BottomSheetDefaults.Elevation,
-            shadowElevation = BottomSheetDefaults.Elevation,
-        ) {
-            val choiceList = remember {
-                listOf(
-                    DateRangeType.Daily,
-                    DateRangeType.Weekly,
-                    DateRangeType.Monthly,
-                    DateRangeType.Yearly,
-                    DateRangeType.Custom(customRangeLengthDays)
-                )
-            }
-            Card {
-                Text(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .align(Alignment.CenterHorizontally),
-                    text = stringResource(R.string.group_transactions_by),
-                    style = MaterialTheme.typography.titleLarge
-                )
-                Spacer(
-                    modifier = Modifier
-                        .height(1.dp)
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-                Column(Modifier.selectableGroup()) {
-                    choiceList.forEach { choice ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                                .selectable(
-                                    selected = (choice == transactionGroupType),
-                                    onClick = {
-                                        transactionGroupType = choice
-                                        bottomSheetController.pop()
-                                    },
-                                    role = Role.RadioButton
-                                )
-                                .padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = (transactionGroupType == choice),
-                                onClick = null
-                            )
-                            Text(
-                                text = stringResource(choice.nameStringRes),
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.padding(start = 16.dp)
-                            )
-                        }
-                    }
-                }
+                MoreNavItem(text = "Accounts", onClick = goToAccounts, icon = rememberVectorPainter(image = Icons.Default.AccountBalanceWallet))
+                MoreNavItem(text = "Categories", onClick = goToCategories, icon = rememberVectorPainter(image = Icons.Default.ShapeLine))
             }
         }
     }
@@ -267,7 +188,7 @@ fun MoreNavItem(
             .clip(RoundedCornerShape(25))
             .background(shape = RoundedCornerShape(25), color = Color.Transparent)
             .clickable { onClick() }
-            .padding(4.dp)
+            .padding(12.dp)
             .then(modifier)
     ) {
         Icon(painter = icon, contentDescription = null)

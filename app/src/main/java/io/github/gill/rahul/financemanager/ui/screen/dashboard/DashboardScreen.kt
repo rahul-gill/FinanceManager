@@ -20,39 +20,60 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.olshevski.navigation.reimagined.pop
 import io.github.gill.rahul.financemanager.ui.DateRangeType
 import kotlinx.coroutines.delay
 import wow.app.core.R
+import wow.app.core.ui.components.AlertDialog
+import wow.app.core.ui.components.BaseDialog
+import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.random.Random
@@ -202,23 +223,33 @@ val lists: List<HeaderListItem> = listOf(
 @Preview(showBackground = true)
 private fun HomeScreenPreview() {
     DashboardScreen(
-        modifier = Modifier,
-        transactionGroupType = DateRangeType.All,
-        customRangeLengthDays = 5,
-        goToCreateTxn = {},
-        showDateRangeChooser = {}
+        goToCreateTxn = {}
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
-    transactionGroupType: DateRangeType,
-    customRangeLengthDays: Long,
-    goToCreateTxn: () -> Unit,
-    showDateRangeChooser: () -> Unit
+    goToCreateTxn: () -> Unit
 ) {
-    Column {
+    var transactionGroupType: DateRangeType by remember {
+        mutableStateOf(DateRangeType.Daily)
+    }
+    var currentRangeStart by remember {
+        mutableStateOf(LocalDate.now())
+    }
+    //TODO:
+    var customRangeLengthDays by remember {
+        mutableLongStateOf(10L)
+    }
+    var showDateRangeChooser by remember {
+        mutableStateOf(false)
+    }
+    var showCustomRangeLengthChooser by remember {
+        mutableStateOf(false)
+    }
+    Column(modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -232,7 +263,7 @@ fun DashboardScreen(
                     modifier = Modifier.padding(end = 8.dp),
                     onClick = {}//TODO
                 ) {
-                    Icon(imageVector = Icons.Default.KeyboardArrowLeft, contentDescription = "TODO")
+                    Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "TODO")
                 }
             }
 
@@ -253,7 +284,7 @@ fun DashboardScreen(
                 }
             }
             Button(
-                onClick = showDateRangeChooser,
+                onClick = { showDateRangeChooser = true },
                 contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
             ) {
                 Text(
@@ -448,6 +479,103 @@ fun DashboardScreen(
         }
     }
 
+    if(showDateRangeChooser){
+        BaseDialog(onDismissRequest = { showDateRangeChooser = false }) {
+            val choiceList = remember {
+                listOf(
+                    DateRangeType.Daily,
+                    DateRangeType.Weekly,
+                    DateRangeType.Monthly,
+                    DateRangeType.Yearly,
+                    DateRangeType.Custom(customRangeLengthDays)
+                )
+            }
+            Card {
+                Text(
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .align(Alignment.CenterHorizontally),
+                    text = stringResource(R.string.group_transactions_by),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(1.dp)
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
+                Column(Modifier.selectableGroup()) {
+                    choiceList.forEach { choice ->
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .selectable(
+                                    selected = (choice == transactionGroupType),
+                                    onClick = {
+                                        transactionGroupType = choice
+                                        showDateRangeChooser = false
+                                        if (choice is DateRangeType.Custom) {
+                                            showCustomRangeLengthChooser = true
+                                        }
+                                    },
+                                    role = Role.RadioButton
+                                )
+                                .padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = (transactionGroupType == choice),
+                                onClick = null
+                            )
+                            Text(
+                                text = stringResource(choice.nameStringRes),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier
+                                    .padding(start = 16.dp)
+                                    .weight(1f)
+                            )
+                            if(choice is DateRangeType.Custom){
+                                IconButton(onClick = { showCustomRangeLengthChooser = true }, enabled = transactionGroupType is DateRangeType.Custom) {
+                                    Icon(imageVector = Icons.Default.EditCalendar, contentDescription = "TODO")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if(showCustomRangeLengthChooser){
+        BaseDialog(
+            onDismissRequest = { showCustomRangeLengthChooser = false }
+        ){
+            val dateRangePickerState = rememberDateRangePickerState()
+            DateRangePicker(
+                title = { Text(text = "Select custom date range") },
+                state = dateRangePickerState,
+                modifier = Modifier.weight(1f)
+            )
+            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = { showCustomRangeLengthChooser = false }) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
+                TextButton(
+                    enabled = dateRangePickerState.selectedStartDateMillis != null && dateRangePickerState.selectedEndDateMillis != null,
+                    onClick = {
+                        val end = Instant.ofEpochMilli(dateRangePickerState.selectedEndDateMillis!!)
+                        val start = Instant.ofEpochMilli(dateRangePickerState.selectedStartDateMillis!!)
+                        val diffDays =Duration.between(end, start).toDays()
+                        println("diffDays:$diffDays")
+                        customRangeLengthDays = diffDays
+                        currentRangeStart = LocalDate.ofInstant(start, ZoneId.systemDefault())
+                        showCustomRangeLengthChooser = false
+                }) {
+                    Text(text = stringResource(id = R.string.ok))
+                }
+            }
+        }
+    }
 }
 
 

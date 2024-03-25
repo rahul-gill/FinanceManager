@@ -1,4 +1,4 @@
-package io.github.gill.rahul.financemanager.ui.screen.create
+package io.github.gill.rahul.financemanager.ui.screen.txn
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

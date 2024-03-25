@@ -1,12 +1,16 @@
 package io.github.gill.rahul.financemanager.models
 
-import io.github.gill.rahul.financemanager.db.UiProperties
+import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.Color
 
-data class Account(
+data class AccountUiModel(
     val id: Long,
     val name: String,
     val startingBalance: Long,
     val currentBalance: Long,
     val includeInTotalBalance: Boolean,
-    val uiProperties: UiProperties
+    val color: Color,
+    @DrawableRes
+    val iconRes: Int,
+    val orderNum: Long,
 )

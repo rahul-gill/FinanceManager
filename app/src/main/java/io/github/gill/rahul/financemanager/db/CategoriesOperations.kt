@@ -39,7 +39,7 @@ class CategoriesOperations(
     fun getCategoryById(id: Long) = q.getCategoryById(id)
 
     fun getAllExpenseCategories(): Flow<List<CategoryUiModel>> {
-        val ret = q.getAllExpenseCategories(
+        return q.getAllExpenseCategories(
             mapper = { id: Long, name: String, _: Long, isExpenseCategory: Boolean, _: Long, color: Long, icon: String, orderNum: Long ->
                 val separatorIndex= icon.indexOf("//")
                 val iconCat = icon.substring(0, separatorIndex)
@@ -54,8 +54,6 @@ class CategoriesOperations(
                 )
             }
         ).asFlow().mapToList(Dispatchers.IO)
-        println("ret" + ret)
-        return ret
     }
 
 
