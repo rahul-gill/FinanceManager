@@ -1,4 +1,4 @@
-import io.github.gill.rahul.financemanager.db.TransactionType;
+import io.github.gill.rahul.financemanager.models.TransactionType;
 import java.time.LocalDateTime;
 import kotlin.Boolean;
 
@@ -86,6 +86,13 @@ UPDATE Accounts
 SET includeInTotalBalance = :included
 WHERE id = :accountId;
 
+
+updateAccountBalance:
+UPDATE Accounts
+SET currentBalance = currentBalance +  :amountToAdd
+WHERE id = :accountId;
+
+
 updateAccountUiDetails:
 UPDATE UiProperties
 SET color = :color,
@@ -109,7 +116,8 @@ getTransactionById:
 SELECT * FROM Transactions WHERE id = :transactionId;
 
 getAllTransactions:
-SELECT * FROM Transactions;
+SELECT Transactions.*, Categories.name AS categoryName, Categories.isExpenseCategory AS isExpense, UiProperties.color, UiProperties.icon
+FROM Transactions, Categories, UiProperties  WHERE Transactions.categoryId = Categories.id AND Categories.uiPropertiesId = UiProperties.id;
 
 deleteTransaction:
 DELETE FROM Transactions WHERE id = :transactionId;

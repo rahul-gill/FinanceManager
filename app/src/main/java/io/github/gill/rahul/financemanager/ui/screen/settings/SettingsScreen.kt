@@ -1,7 +1,6 @@
 package io.github.gill.rahul.financemanager.ui.screen.settings
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,20 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Colorize
 import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Wallet
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,39 +31,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.skydoves.colorpicker.compose.AlphaTile
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
-import wow.app.core.R
 import io.github.gill.rahul.financemanager.prefs.PreferenceManager
+import wow.app.core.R
 import wow.app.core.ui.ColorSchemeType
 import wow.app.core.ui.DarkThemeType
 import wow.app.core.ui.FinManTheme
 import wow.app.core.ui.ThemeConfig
 import wow.app.core.ui.components.AlertDialog
 import wow.app.core.ui.components.GenericPreference
-import wow.app.core.ui.components.PreferenceGroupHeader
 import wow.app.core.ui.components.ListPreference
+import wow.app.core.ui.components.PreferenceGroupHeader
 import wow.app.core.ui.components.SwitchPreference
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MoreSettingsScreen(
-    onGoBack: () -> Unit,
-    onAddAccount: () -> Unit
+fun SettingsScreen(
+    onGoBack: () -> Unit
 ) {
-    val overallBalance = "$ 10000"
     val followSystemColor = PreferenceManager.followSystemColors.asState()
     val seedColor = PreferenceManager.colorSchemeSeed.asState()
     val theme = PreferenceManager.themeConfig.asState()
     val darkThemeType = PreferenceManager.darkThemeType.asState()
-    println("4523423 MoreSettingsScreen followSystemColor:$followSystemColor seedColor:$seedColor theme:$theme darkThemeType: $darkThemeType")
     Scaffold(
         topBar = {
             TopAppBar(
@@ -93,39 +80,6 @@ fun MoreSettingsScreen(
                 .padding(horizontal = 12.dp)
                 .padding(paddingValues)
         ) {
-            Card {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Wallet, contentDescription = null,
-                        modifier = Modifier
-                            .size(56.dp)
-                            .padding(12.dp)
-                            .background(Color.Transparent)
-                    )
-                    Column(Modifier.weight(1f)) {
-                        Text(text = "Accounts", style = MaterialTheme.typography.titleMedium)
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = "Overall balance: $overallBalance",
-                            style = MaterialTheme.typography.labelLarge
-                        )
-                    }
-                    TextButton(onClick = onAddAccount) {
-                        Text("Add New")
-                    }
-                }
-            }
-            Spacer(Modifier.height(8.dp))
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                items(10) {
-                    AccountCard()
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
             PreferenceGroupHeader(title = stringResource(id = R.string.look_and_feel))
             Spacer(modifier = Modifier.height(8.dp))
             ListPreference(
@@ -148,7 +102,7 @@ fun MoreSettingsScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             SwitchPreference(
-                title = "Pure black background",
+                title = stringResource(R.string.pure_black_background),
                 isChecked = darkThemeType.value == DarkThemeType.Black,
                 onCheckedChange = { checked ->
                     PreferenceManager.darkThemeType.setValue(if (checked) DarkThemeType.Black else DarkThemeType.Dark)
@@ -157,13 +111,10 @@ fun MoreSettingsScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
             SwitchPreference(
-                title = "Follow System Colors",
+                title = stringResource(R.string.follow_system_colors),
                 isChecked = followSystemColor.value,
                 onCheckedChange = {
-                    println("4523423 current value: ${followSystemColor.value} PreferenceManager.followSystemColors.setValue($it)")
                     PreferenceManager.followSystemColors.setValue(it)
-
-                    println("4523423 after setting value is: ${followSystemColor.value}")
                 }
             )
             AnimatedVisibility(visible = !followSystemColor.value) {
@@ -172,7 +123,7 @@ fun MoreSettingsScreen(
                     mutableStateOf(false)
                 }
                 GenericPreference(
-                    title = "Custom Color Scheme Seed",
+                    title = stringResource(R.string.custom_color_scheme_seed),
                     onClick = {
                         isColorPickerDialogShowing.value = true
                     },
@@ -255,53 +206,6 @@ fun MoreSettingsScreen(
                     }
                 }
             }
-        }
-
-    }
-}
-
-@Composable
-fun AccountCard(
-    modifier: Modifier = Modifier,
-    color: Color = Color.Magenta,
-    icon: Painter = rememberVectorPainter(Icons.Default.AccountBalanceWallet),
-    isDefault: Boolean = true
-) {
-    OutlinedCard(
-        modifier = Modifier
-            .width(200.dp)
-            .then(modifier),
-        border = BorderStroke(width = 1.dp, color = color)
-    ) {
-        Column(Modifier.padding(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = icon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(30.dp)
-                        .padding(4.dp),
-                    tint = color
-                )
-                Text(text = "Main Account")
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(start = 4.dp)
-            ) {
-                Text(
-                    text = "- $ 10,49000.48",
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                if (isDefault) {
-                    Text(text = "Default", style = MaterialTheme.typography.labelMedium)
-                }
-            }
-
         }
     }
 }

@@ -1,5 +1,6 @@
 package io.github.gill.rahul.financemanager.ui.screen.txn
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,8 +32,11 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,8 +57,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -65,6 +72,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -76,12 +84,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import wow.app.core.R
+import io.github.gill.rahul.financemanager.db.AccountsOperations
+import io.github.gill.rahul.financemanager.db.CategoriesOperations
 import io.github.gill.rahul.financemanager.models.TransactionType
-import io.github.gill.rahul.financemanager.ui.screen.categories.CategoryChipPreview
+import io.github.gill.rahul.financemanager.db.TransactionsOperations
+import io.github.gill.rahul.financemanager.models.AccountUiModel
+import wow.app.core.R
+import io.github.gill.rahul.financemanager.ui.screen.categories.CategorySelector
 import wow.app.core.util.DateTimeUtils
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 
 @Composable
@@ -108,7 +119,45 @@ fun CreateTxnScreen(
     var dateTime: LocalDateTime by remember {
         mutableStateOf(LocalDateTime.now())
     }
+    var transactionType: TransactionType by remember {
+        mutableStateOf(TransactionType.Expense)
+    }
+    val dateText =
+        remember(dateTime) { DateTimeUtils.dayFormat.format(dateTime) }
+    val timeText =
+        remember(dateTime) { DateTimeUtils.timeFormat12Hours.format(dateTime) }
+    var amount by remember { mutableStateOf("") }
+    val titleFocusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var title by remember { mutableStateOf("") }
+    var note by remember { mutableStateOf("") }
 
+    val accountOptions =
+        AccountsOperations.instance.getAllAccounts().collectAsState(initial = listOf())
+    var accountDropdownExpanded by remember { mutableStateOf(false) }
+    var selectedAccount: AccountUiModel? by remember { mutableStateOf(null) }
+    LaunchedEffect(accountOptions.value){
+        println("Launcedasrfda selectedAccount:${selectedAccount} accountOptions:${accountOptions.value}")
+        if(selectedAccount == null && accountOptions.value.isNotEmpty()){
+            selectedAccount = accountOptions.value[0]
+        }
+        println("Launcedasrfda after: selectedAccount:${selectedAccount}")
+    }
+    val expenseCategories = CategoriesOperations.instance.getAllExpenseCategories().collectAsState(
+        initial = listOf()
+    )
+    val incomeCategories = CategoriesOperations.instance.getAllIncomeCategories().collectAsState(
+        initial = listOf()
+    )
+    val categoryChips = remember(expenseCategories, incomeCategories, transactionType) {
+        when(transactionType){
+            TransactionType.Income -> incomeCategories
+            TransactionType.Expense -> expenseCategories
+        }
+    }
+    var selectedCategoryIndex by remember {
+        mutableIntStateOf(0)
+    }
 
     Scaffold(
         topBar = {
@@ -137,7 +186,7 @@ fun CreateTxnScreen(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp, horizontal = 16.dp)
                 ) {
-                    var checked by remember { mutableStateOf(true) }
+                    var batchAdd by remember { mutableStateOf(true) }
                     Text(
                         text = stringResource(R.string.batch_add),
                         style = MaterialTheme.typography.bodyLarge,
@@ -146,10 +195,35 @@ fun CreateTxnScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(
                         modifier = Modifier.semantics { contentDescription = "TODO" },
-                        checked = checked,
-                        onCheckedChange = { checked = it })
+                        checked = batchAdd,
+                        onCheckedChange = { batchAdd = it })
                     Spacer(modifier = Modifier.weight(1f))
-                    Button(onClick = { /*TODO*/ }) {
+                    val context = LocalContext.current
+                    Button(onClick = {
+                        if (selectedAccount == null) {
+                            //TODO: show error
+                            Toast.makeText(context, "selected account null error", Toast.LENGTH_LONG).show()
+                            return@Button
+                        }
+                        if (amount.toDoubleOrNull() == null) {
+                            //TODO: show error
+                            Toast.makeText(context, "selected amount not good error", Toast.LENGTH_LONG).show()
+                            return@Button
+                        }
+
+                        TransactionsOperations.instance.createTransaction(
+                            accountId = selectedAccount!!.id,
+                            type = transactionType,
+                            amount = amount.toDouble().times(100).toLong(),
+                            categoryId = categoryChips.value[selectedCategoryIndex].id,
+                            title = title,
+                            description = note,
+                            dateTime = dateTime
+                        )
+                        if (!batchAdd) {
+                            onGoBack()
+                        }
+                    }) {
                         Icon(imageVector = Icons.Default.DoneAll, contentDescription = null)
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(text = stringResource(R.string.done))
@@ -164,21 +238,6 @@ fun CreateTxnScreen(
 
     ) { paddingValues ->
 
-        var transactionType: TransactionType by remember {
-            mutableStateOf(TransactionType.Expense)
-        }
-
-        val dayFormat = stringResource(id = R.string.format_day)
-        val timeFormat = stringResource(R.string.time_format_12h)
-        val dateText =
-            remember(dateTime) { DateTimeFormatter.ofPattern(dayFormat).format(dateTime) }
-        val timeText =
-            remember(dateTime) { DateTimeFormatter.ofPattern(timeFormat).format(dateTime) }
-        var amount by remember { mutableStateOf("") }
-        val titleFocusRequester = remember { FocusRequester() }
-        val keyboardController = LocalSoftwareKeyboardController.current
-        var title by remember { mutableStateOf("") }
-        var note by remember { mutableStateOf("") }
         Column(
             modifier = Modifier
                 .padding(paddingValues)
@@ -186,6 +245,46 @@ fun CreateTxnScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            if (selectedAccount != null) {
+                ExposedDropdownMenuBox(
+                    modifier = Modifier.fillMaxWidth(),
+                    expanded = accountDropdownExpanded,
+                    onExpandedChange = { accountDropdownExpanded = it },
+                ) {
+                    TextField(
+                        // The `menuAnchor` modifier must be passed to the text field for correctness.
+                        modifier = Modifier.menuAnchor(),
+                        value = selectedAccount!!.name,
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
+                        label = { Text("Account") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = accountDropdownExpanded) },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    )
+                    ExposedDropdownMenu(
+                        expanded = accountDropdownExpanded,
+                        onDismissRequest = { accountDropdownExpanded = false },
+                    ) {
+                        accountOptions.value.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        option.name,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                },
+                                onClick = {
+                                    selectedAccount = option
+                                    accountDropdownExpanded = false
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                    }
+                }
+            }
+
             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
 
                 TransactionType.entries.fastForEachIndexed { index, txnType ->
@@ -194,7 +293,10 @@ fun CreateTxnScreen(
                             index = index,
                             count = TransactionType.entries.size
                         ),
-                        onClick = { transactionType = txnType },
+                        onClick = {
+                            transactionType = txnType
+                            selectedCategoryIndex = 0
+                        },
                         selected = transactionType == txnType
                     ) {
                         Text(
@@ -308,7 +410,13 @@ fun CreateTxnScreen(
                     .height(70.dp)
                     .focusRequester(titleFocusRequester),
             )
-            CategoryChipPreview()
+            if(categoryChips.value.isNotEmpty()){
+                CategorySelector(
+                    categories = categoryChips.value,
+                    onCategorySelected = { selectedCategoryIndex = it },
+                    selectedCategoryIndex = selectedCategoryIndex
+                )
+            }
             TextField(
                 value = note,
                 onValueChange = { note = it },

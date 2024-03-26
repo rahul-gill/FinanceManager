@@ -10,6 +10,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +27,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.EditCalendar
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -48,6 +51,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -59,16 +63,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.olshevski.navigation.reimagined.pop
+import io.github.gill.rahul.financemanager.db.GetAllTransactions
+import io.github.gill.rahul.financemanager.db.Transactions
+import io.github.gill.rahul.financemanager.db.TransactionsOperations
+import io.github.gill.rahul.financemanager.models.TransactionUiModel
 import io.github.gill.rahul.financemanager.ui.DateRangeType
 import kotlinx.coroutines.delay
 import wow.app.core.R
 import wow.app.core.ui.components.AlertDialog
 import wow.app.core.ui.components.BaseDialog
+import wow.app.core.util.DateTimeUtils
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -79,155 +89,13 @@ import java.util.UUID
 import kotlin.random.Random
 
 
-data class TxnItem(
-    val title: String,
-    val categoryColor: Color,
-    val categoryName: String,
-    val dateTime: LocalDateTime,
-    val txnAmountFormatted: String,
-    val id: String = UUID.randomUUID().toString(),
-)
-
 sealed class HeaderListItem {
     class Header(val value: LocalDate) : HeaderListItem()
-    class Item(val value: TxnItem) : HeaderListItem()
+    class Item(val value: TransactionUiModel) : HeaderListItem()
 }
 
-val lists: List<HeaderListItem> = listOf(
-    HeaderListItem.Header(LocalDate.now()),
-    HeaderListItem.Item(
-        TxnItem(
-            "चाय",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now(),
-            "- $ 100"
-        ),
 
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "घर आते टाइम",
-            Color.Blue,
-            "परिवहन",
-            LocalDateTime.now().minusHours(10),
-            "- $ 5"
-        ),
-
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "खाना",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusDays(15),
-            "- $ 54.90"
-        ),
-
-        ),
-    HeaderListItem.Header(LocalDate.now().minusMonths(1)),
-    HeaderListItem.Item(
-        TxnItem(
-            "चाय",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusMonths(1),
-            "- $ 100"
-        ),
-
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "घर आते टाइम",
-            Color.Blue,
-            "परिवहन",
-            LocalDateTime.now().minusMonths(1).minusHours(10),
-            "- $ 5"
-        ),
-
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "खाना",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusMonths(1).minusDays(15),
-            "- $ 54.90"
-        ),
-
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "खाना",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusMonths(1).minusDays(15),
-            "- $ 54.90"
-        ),
-
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "खाना",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusMonths(1).minusDays(15),
-            "- $ 54.90"
-        ),
-
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "खाना",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusMonths(1).minusDays(15),
-            "- $ 54.90"
-        ),
-
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "खाना",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusMonths(1).minusDays(15),
-            "- $ 54.90"
-        ),
-
-        ),
-    HeaderListItem.Item(
-        TxnItem(
-            "खाना",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusMonths(1).minusDays(15),
-            "- $ 54.90"
-        ),
-
-        ),
-    HeaderListItem.Header(LocalDate.now().minusDays(2)),
-    HeaderListItem.Item(
-        TxnItem(
-            "खाना",
-            Color.Cyan,
-            "खाने का सामान",
-            LocalDateTime.now().minusMonths(2).minusDays(15),
-            "- $ 54.90"
-        ),
-
-        ),
-)
-
-@Composable
-@Preview(showBackground = true)
-private fun HomeScreenPreview() {
-    DashboardScreen(
-        goToCreateTxn = {}
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun DashboardScreen(
     modifier: Modifier = Modifier,
@@ -239,7 +107,6 @@ fun DashboardScreen(
     var currentRangeStart by remember {
         mutableStateOf(LocalDate.now())
     }
-    //TODO:
     var customRangeLengthDays by remember {
         mutableLongStateOf(10L)
     }
@@ -250,37 +117,42 @@ fun DashboardScreen(
         mutableStateOf(false)
     }
     Column(modifier) {
-        Row(
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalArrangement = Arrangement.Center
         ) {
 
-            if (transactionGroupType != DateRangeType.All) {
-                IconButton(
-                    modifier = Modifier.padding(end = 8.dp),
-                    onClick = {}//TODO
-                ) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "TODO")
+            Row {
+                if (transactionGroupType != DateRangeType.All) {
+                    IconButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        onClick = { currentRangeStart = transactionGroupType.calculatePreviousStartDate(currentRangeStart) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "TODO"
+                        )
+                    }
                 }
-            }
 
-            Text(
-                text = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(LocalDate.now()),//TODO
-                style = MaterialTheme.typography.titleMedium
-            )
+                Text(
+                    text = transactionGroupType.formatDateRange(currentRangeStart),
+                    style = MaterialTheme.typography.titleMedium
+                )
 
-            if (transactionGroupType != DateRangeType.All) {
-                IconButton(
-                    modifier = Modifier.padding(start = 8.dp),
-                    onClick = {}//TODO
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
-                        contentDescription = "TODO"
-                    )
+                if (transactionGroupType != DateRangeType.All) {
+                    IconButton(
+                        modifier = Modifier.padding(start = 8.dp),
+                        onClick = { currentRangeStart = transactionGroupType.calculatePreviousStartDate(currentRangeStart) }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = "TODO"
+                        )
+                    }
                 }
             }
             Button(
@@ -340,7 +212,33 @@ fun DashboardScreen(
                 }
             }
         }
-        Box {
+        val txnList =
+            TransactionsOperations.instance.getAllTransactions().collectAsState(initial = listOf())
+        val lists = remember(txnList.value) {
+            val finalList = mutableListOf<HeaderListItem>()
+            var prevDateTime: LocalDateTime? = null
+            txnList.value
+                .sortedWith { first, second ->
+                    when {
+                        first.dateTime.year > second.dateTime.year -> 1
+                        first.dateTime.year < second.dateTime.year -> -1
+                        first.dateTime.month > second.dateTime.month -> 1
+                        first.dateTime.month < second.dateTime.month -> -1
+                        else -> 0
+                    }
+                }.forEach { item ->
+                    if (prevDateTime == null || prevDateTime!!.year != item.dateTime.year || prevDateTime!!.month != item.dateTime.month) {
+                        finalList.add(HeaderListItem.Header(item.dateTime.toLocalDate()))
+                    }
+                    finalList.add(HeaderListItem.Item(item))
+                    prevDateTime = item.dateTime
+                }
+            finalList
+        }
+        Box(
+            Modifier
+                .weight(1f)
+                .fillMaxWidth()) {
             val state = rememberLazyListState()
             val shouldHeaderBeVisible = remember {
                 mutableStateOf(false)
@@ -353,8 +251,6 @@ fun DashboardScreen(
                     shouldHeaderBeVisible.value = false
                 }
             }
-            val monthFormat =
-                DateTimeFormatter.ofPattern(stringResource(id = R.string.format_month))
             LazyColumn(state = state, modifier = Modifier.testTag("dashboard:transaction_list")) {
                 itemsIndexed(
                     items = lists,
@@ -376,7 +272,7 @@ fun DashboardScreen(
                         is HeaderListItem.Header -> {
                             Text(
                                 text = remember(item.value) {
-                                    monthFormat.format(item.value)
+                                    DateTimeUtils.monthFormat.format(item.value)
                                 },
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.primary,
@@ -394,22 +290,17 @@ fun DashboardScreen(
                                         //do Some TODO
                                     }
                                     .padding(vertical = 8.dp, horizontal = 16.dp),
-                                title = txn.title,
+                                title = txn.title ?: "",
                                 subtitle = remember(txn.categoryName, txn.dateTime) {
                                     "${txn.categoryName} / ${
-                                        txn.dateTime.format(
-                                            DateTimeFormatter.ofPattern("dd MMMM hh:mm")
-                                        )
+                                        txn.dateTime.format(DateTimeUtils.simpleDateAndTimeFormat)
                                     }"
                                 },
-                                sideProminentText = txn.txnAmountFormatted,
-                                categoryColor = Random(System.currentTimeMillis()).nextBoolean()
-                                    .run {
-                                        if (this) Color.Cyan else Color.Magenta
-                                    },
+                                sideProminentText = txn.amount.formattedValue,
+                                categoryColor = item.value.color,
                                 icon = {
                                     Icon(
-                                        imageVector = Icons.Default.Favorite,
+                                        painter = painterResource(id = item.value.iconRes),
                                         contentDescription = null,
                                         tint = Color.Black
                                     )
@@ -432,18 +323,20 @@ fun DashboardScreen(
                 }
             }
 
-            val header = remember {
+            val header = remember(lists) {
                 derivedStateOf {
-                    when (val item = lists[state.firstVisibleItemIndex]) {
+                    when (val item = lists.getOrNull(state.firstVisibleItemIndex)) {
                         is HeaderListItem.Header -> {
                             (lists[state.firstVisibleItemIndex + 1] as HeaderListItem.Item).value.dateTime.format(
-                                monthFormat
+                                DateTimeUtils.monthFormat
                             )
                         }
 
                         is HeaderListItem.Item -> {
-                            item.value.dateTime.format(monthFormat)
+                            item.value.dateTime.format(DateTimeUtils.monthFormat)
                         }
+
+                        null -> "Err"
                     }
                 }
             }
@@ -456,7 +349,13 @@ fun DashboardScreen(
                     .padding(top = 4.dp)
             ) {
                 Surface(
-                    modifier = Modifier.animateContentSize(),
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.secondary,
+                            shape = RoundedCornerShape(50)
+                        )
+                        .clip(RoundedCornerShape(50))
+                        .animateContentSize(),
                     color = MaterialTheme.colorScheme.secondary,
                     shape = RoundedCornerShape(50),
                 ) {
@@ -479,7 +378,7 @@ fun DashboardScreen(
         }
     }
 
-    if(showDateRangeChooser){
+    if (showDateRangeChooser) {
         BaseDialog(onDismissRequest = { showDateRangeChooser = false }) {
             val choiceList = remember {
                 listOf(
@@ -535,9 +434,15 @@ fun DashboardScreen(
                                     .padding(start = 16.dp)
                                     .weight(1f)
                             )
-                            if(choice is DateRangeType.Custom){
-                                IconButton(onClick = { showCustomRangeLengthChooser = true }, enabled = transactionGroupType is DateRangeType.Custom) {
-                                    Icon(imageVector = Icons.Default.EditCalendar, contentDescription = "TODO")
+                            if (choice is DateRangeType.Custom) {
+                                IconButton(
+                                    onClick = { showCustomRangeLengthChooser = true },
+                                    enabled = transactionGroupType is DateRangeType.Custom
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.EditCalendar,
+                                        contentDescription = "TODO"
+                                    )
                                 }
                             }
                         }
@@ -546,10 +451,10 @@ fun DashboardScreen(
             }
         }
     }
-    if(showCustomRangeLengthChooser){
+    if (showCustomRangeLengthChooser) {
         BaseDialog(
             onDismissRequest = { showCustomRangeLengthChooser = false }
-        ){
+        ) {
             val dateRangePickerState = rememberDateRangePickerState()
             DateRangePicker(
                 title = { Text(text = "Select custom date range") },
@@ -564,13 +469,14 @@ fun DashboardScreen(
                     enabled = dateRangePickerState.selectedStartDateMillis != null && dateRangePickerState.selectedEndDateMillis != null,
                     onClick = {
                         val end = Instant.ofEpochMilli(dateRangePickerState.selectedEndDateMillis!!)
-                        val start = Instant.ofEpochMilli(dateRangePickerState.selectedStartDateMillis!!)
-                        val diffDays =Duration.between(end, start).toDays()
+                        val start =
+                            Instant.ofEpochMilli(dateRangePickerState.selectedStartDateMillis!!)
+                        val diffDays = Duration.between(end, start).toDays()
                         println("diffDays:$diffDays")
                         customRangeLengthDays = diffDays
                         currentRangeStart = LocalDate.ofInstant(start, ZoneId.systemDefault())
                         showCustomRangeLengthChooser = false
-                }) {
+                    }) {
                     Text(text = stringResource(id = R.string.ok))
                 }
             }

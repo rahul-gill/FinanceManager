@@ -5,7 +5,7 @@ import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.EnumColumnAdapter
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
-import io.github.gill.rahul.financemanager.FinanceManagerApp
+import io.github.gill.rahul.financemanager.models.TransactionType
 import wow.app.core.startup.applicationContextGlobal
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

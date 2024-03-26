@@ -51,8 +51,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import io.github.gill.rahul.financemanager.db.CategoriesOperations
-import io.github.gill.rahul.financemanager.models.CategoryUiModel
 import io.github.gill.rahul.financemanager.models.TransactionType
+import io.github.gill.rahul.financemanager.models.CategoryUiModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem

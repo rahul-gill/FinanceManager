@@ -39,9 +39,11 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.gill.rahul.financemanager.models.CategoryUiModel
 import wow.app.core.ui.DarkThemeType
 import wow.app.core.ui.FinManTheme
 import wow.app.core.ui.ThemeConfig
@@ -124,7 +126,7 @@ fun CategoryChip(
 @Composable
 fun CategorySelector(
     modifier: Modifier = Modifier,
-    categories: List<UICategory>,
+    categories: List<CategoryUiModel>,
     selectedCategoryIndex: Int,
     onCategorySelected: (Int) -> Unit
 ) {
@@ -151,8 +153,8 @@ fun CategorySelector(
                         isSelected = selectedCategoryIndex == index,
                         onClick = { onCategorySelected(index) },
                         color = categories[index].color,
-                        title = categories[index].title,
-                        icon = categories[index].icon
+                        title = categories[index].name,
+                        icon = painterResource(id = categories[index].iconRes)
                     )
                 }
             }
@@ -165,102 +167,5 @@ fun CategorySelector(
                 contentDescription = null
             )
         }
-    }
-}
-
-data class UICategory(
-    val title: String,
-    val icon: Painter,
-    val color: Color,
-)
-
-@OptIn(ExperimentalLayoutApi::class)
-@Preview(showBackground = true)
-@Composable
-fun CategoryChipPreview() {
-    FinManTheme(
-        themeConfig = ThemeConfig.Dark,
-        darkThemeType = DarkThemeType.Black
-    ) {
-        var checkedIndex by remember {
-            mutableIntStateOf(0)
-        }
-        CategorySelector(
-            categories = listOf(
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ),
-
-                UICategory(
-                    title = "Transportation",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ),
-
-                UICategory(
-                    title = "Bills and Utilities",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.tertiaryContainer
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.secondary
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.secondary
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.secondary
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.primary
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.primary
-                ),
-
-                UICategory(
-                    title = "Others",
-                    icon = rememberVectorPainter(image = Icons.Default.Favorite),
-                    color = MaterialTheme.colorScheme.primary
-                ),
-            ),
-            selectedCategoryIndex = checkedIndex,
-            onCategorySelected = { checkedIndex = it }
-        )
     }
 }

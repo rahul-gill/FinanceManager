@@ -7,36 +7,29 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShapeLine
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,21 +39,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.olshevski.navigation.reimagined.AnimatedNavHost
 import dev.olshevski.navigation.reimagined.NavAction
 import dev.olshevski.navigation.reimagined.NavBackHandler
-import dev.olshevski.navigation.reimagined.material3.BottomSheetNavHost
 import dev.olshevski.navigation.reimagined.moveToTop
 import dev.olshevski.navigation.reimagined.navigate
-import dev.olshevski.navigation.reimagined.pop
 import dev.olshevski.navigation.reimagined.rememberNavController
 import io.github.gill.rahul.financemanager.ui.BudgetScreen
-import io.github.gill.rahul.financemanager.ui.DateRangeType
 import io.github.gill.rahul.financemanager.ui.screen.dashboard.DashboardScreen
 import io.github.gill.rahul.financemanager.ui.SomeOtherScreen
 import io.github.gill.rahul.financemanager.ui.StatsScreen
@@ -74,7 +64,7 @@ import wow.app.core.ui.materialSharedAxisZOut
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun TabsNavHost(
-    toSetting: () -> Unit,
+    goToSettings: () -> Unit,
     goToCreateTxn: () -> Unit,
     goToCategories: () -> Unit,
     goToAccounts: () -> Unit
@@ -87,17 +77,13 @@ fun TabsNavHost(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.app_name)) },
-                actions = {
-                    IconButton(
-                        onClick = toSetting
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "TODO"
-                        )
-                    }
-                },
+                title = {
+                    Text(
+                        stringResource(id = R.string.app_name),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             )
         },
         bottomBar = {
@@ -129,7 +115,7 @@ fun TabsNavHost(
                     )
                 }
 
-                IconButton(onClick = { showMoreTabsDialog = true }){
+                IconButton(onClick = { showMoreTabsDialog = true }) {
                     Icon(
                         imageVector = Icons.Default.Menu,
                         contentDescription = "TODO",
@@ -168,8 +154,21 @@ fun TabsNavHost(
                 horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterVertically)
             ) {
-                MoreNavItem(text = "Accounts", onClick = goToAccounts, icon = rememberVectorPainter(image = Icons.Default.AccountBalanceWallet))
-                MoreNavItem(text = "Categories", onClick = goToCategories, icon = rememberVectorPainter(image = Icons.Default.ShapeLine))
+                MoreNavItem(
+                    text = stringResource(id = R.string.accounts),
+                    onClick = goToAccounts,
+                    icon = rememberVectorPainter(image = Icons.Default.AccountBalanceWallet)
+                )
+                MoreNavItem(
+                    text = stringResource(id = R.string.categories),
+                    onClick = goToCategories,
+                    icon = rememberVectorPainter(image = Icons.Default.ShapeLine)
+                )
+                MoreNavItem(
+                    text = stringResource(id = R.string.settings),
+                    onClick = goToSettings,
+                    icon = rememberVectorPainter(image = Icons.Default.Settings)
+                )
             }
         }
     }

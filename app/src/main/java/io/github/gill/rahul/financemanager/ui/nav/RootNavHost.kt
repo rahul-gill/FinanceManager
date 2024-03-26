@@ -16,7 +16,7 @@ import io.github.gill.rahul.financemanager.ui.screen.accounts.CreateAccountScree
 import io.github.gill.rahul.financemanager.ui.screen.categories.CreateCategoryScreen
 import io.github.gill.rahul.financemanager.ui.screen.txn.CreateTxnScreen
 import io.github.gill.rahul.financemanager.ui.screen.categories.CategoriesListScreen
-import io.github.gill.rahul.financemanager.ui.screen.settings.MoreSettingsScreen
+import io.github.gill.rahul.financemanager.ui.screen.settings.SettingsScreen
 import wow.app.core.ui.materialSharedAxisZIn
 import wow.app.core.ui.materialSharedAxisZOut
 
@@ -32,13 +32,12 @@ fun RootNavHost() {
         }
     ) { screen ->
         when (screen) {
-            Screen.Settings -> MoreSettingsScreen(
-                onGoBack = { navController.pop() },
-                onAddAccount = {/*TODO*/ }
+            Screen.Settings -> SettingsScreen(
+                onGoBack = { navController.pop() }
             )
 
             Screen.Tabs -> TabsNavHost(
-                toSetting = { navController.navigate(Screen.Settings) },
+                goToSettings = { navController.navigate(Screen.Settings) },
                 goToCreateTxn = { navController.navigate(Screen.CreateTxn) },
                 goToCategories = { navController.navigate(Screen.Categories) },
                 goToAccounts = { navController.navigate(Screen.Accounts) }

@@ -1,8 +1,19 @@
 package io.github.gill.rahul.financemanager.ui
 
+import android.content.Context
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import wow.app.core.R
+import wow.app.core.util.DateTimeUtils.dateRangeDayFormat
+import wow.app.core.util.DateTimeUtils.dayFormat
+import wow.app.core.util.DateTimeUtils.monthFormat
+import wow.app.core.util.DateTimeUtils.yearFormat
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjuster
+import java.time.temporal.TemporalAdjusters
 
 sealed class DateRangeType {
     data object Daily : DateRangeType()
@@ -12,17 +23,18 @@ sealed class DateRangeType {
     data object All : DateRangeType()
     data class Custom(val daysInRange: Long) : DateRangeType()
 
+    val stringRepresentation
+        @Composable get() = stringResource(id = nameStringRes)
+
     @get:StringRes
     val nameStringRes: Int
-        get(){
-            return when (this) {
-                All -> R.string.all_time
-                is Custom -> R.string.custom
-                Daily -> R.string.daily
-                Monthly -> R.string.monthly
-                Weekly -> R.string.weekly
-                Yearly -> R.string.yearly
-            }
+        get() = when (this) {
+            All -> R.string.all_time
+            is Custom -> R.string.custom
+            Daily -> R.string.daily
+            Monthly -> R.string.monthly
+            Weekly -> R.string.weekly
+            Yearly -> R.string.yearly
         }
 
 
@@ -37,6 +49,33 @@ sealed class DateRangeType {
         }
     }
 
+
+    fun formatDateRange(startDate: LocalDate = LocalDate.now()): String {
+        return when (this) {
+            All -> ""
+            is Custom -> formatDateRange(startDate, startDate.plusDays(daysInRange))
+            Daily -> dayFormat.format(startDate)
+            Monthly -> monthFormat.format(startDate)
+            Weekly -> formatWeekRange(weekDate = startDate)
+            Yearly -> yearFormat.format(startDate)
+        }
+    }
+
+    private fun formatDateRange(start: LocalDate, end: LocalDate): String {
+        return dateRangeDayFormat.format(start) + " - " + dateRangeDayFormat.format(end)
+    }
+
+    private fun formatWeekRange(weekDate: LocalDate): String {
+        return formatDateRange(
+            weekDate.with(
+                TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
+            ),
+            weekDate.with(
+                TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)
+            )
+        )
+    }
+
     fun calculateNextStartDate(startDate: LocalDate = LocalDate.now()): LocalDate {
         return when (this) {
             All -> error("All date range doesn't support calculateNextStartDate")
@@ -47,4 +86,5 @@ sealed class DateRangeType {
             Yearly -> startDate.plusYears(1)
         }
     }
+
 }
