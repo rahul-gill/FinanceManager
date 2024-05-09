@@ -22,12 +22,10 @@ import androidx.compose.material.icons.filled.ShapeLine
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,18 +37,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.olshevski.navigation.reimagined.AnimatedNavHost
 import dev.olshevski.navigation.reimagined.NavAction
 import dev.olshevski.navigation.reimagined.NavBackHandler
 import dev.olshevski.navigation.reimagined.moveToTop
 import dev.olshevski.navigation.reimagined.navigate
 import dev.olshevski.navigation.reimagined.rememberNavController
+import io.github.gill.rahul.financemanager.db.TransactionsOperations
 import io.github.gill.rahul.financemanager.ui.BudgetScreen
+import io.github.gill.rahul.financemanager.db.DateRangeType
 import io.github.gill.rahul.financemanager.ui.screen.dashboard.DashboardScreen
 import io.github.gill.rahul.financemanager.ui.SomeOtherScreen
 import io.github.gill.rahul.financemanager.ui.StatsScreen
@@ -60,6 +60,7 @@ import wow.app.core.ui.components.TabItem
 import wow.app.core.ui.components.Tabs
 import wow.app.core.ui.materialSharedAxisZIn
 import wow.app.core.ui.materialSharedAxisZOut
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -67,7 +68,8 @@ fun TabsNavHost(
     goToSettings: () -> Unit,
     goToCreateTxn: () -> Unit,
     goToCategories: () -> Unit,
-    goToAccounts: () -> Unit
+    goToAccounts: () -> Unit,
+    goToTxnDetails: (Long) -> Unit
 ) {
     val navController = rememberNavController(TabScreen.Dashboard)
     var showMoreTabsDialog by remember {
@@ -135,9 +137,35 @@ fun TabsNavHost(
             }
         ) { tab ->
             when (tab) {
-                TabScreen.Dashboard -> DashboardScreen(
-                    goToCreateTxn = goToCreateTxn
-                )
+                TabScreen.Dashboard -> {
+                    var transactionGroupType: DateRangeType by remember {
+                        mutableStateOf(DateRangeType.Daily)
+                    }
+                    var currentRangeStart by remember {
+                        mutableStateOf(LocalDate.now())
+                    }
+                    val transactionGrouped =
+                        TransactionsOperations.instance.transactionsDateFiltered(
+                            transactionGroupType,
+                            currentRangeStart
+                        ).collectAsStateWithLifecycle(listOf())
+                    val incomeExpense =
+                        TransactionsOperations.instance.overallIncomeExpenseFiltered(
+                            transactionGroupType,
+                            currentRangeStart
+                        )
+
+                    DashboardScreen(
+                        goToCreateTxn = goToCreateTxn,
+                        txnList = transactionGrouped.value,
+                        goToTransaction = goToTxnDetails,
+                        transactionGroupType = transactionGroupType,
+                        onChangeTransactionGroupType = { transactionGroupType = it },
+                        currentRangeStart = currentRangeStart,
+                        onChangeCurrentRangeStart = { currentRangeStart = it },
+                        filteredIncomeExpense =incomeExpense
+                    )
+                }
 
                 TabScreen.Budget -> BudgetScreen()
                 TabScreen.Stats -> StatsScreen()

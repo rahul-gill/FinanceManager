@@ -23,9 +23,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.outlined.Keyboard
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.AssistChip
@@ -95,18 +97,13 @@ import wow.app.core.util.DateTimeUtils
 import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
 
-@Composable
-@Preview(showBackground = true, locale = "hi")
-private fun CreateTxnScreenPreview() {
-    CreateTxnScreen({})
-
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CreateTxnScreen(
-    onGoBack: () -> Unit
+    onGoBack: () -> Unit,
+    onCreateCategory: () -> Unit,
+    onGoToCategoriesList: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var isDatePickerVisible by remember {
@@ -136,9 +133,9 @@ fun CreateTxnScreen(
         AccountsOperations.instance.getAllAccounts().collectAsState(initial = listOf())
     var accountDropdownExpanded by remember { mutableStateOf(false) }
     var selectedAccount: AccountUiModel? by remember { mutableStateOf(null) }
-    LaunchedEffect(accountOptions.value){
+    LaunchedEffect(accountOptions.value) {
         println("Launcedasrfda selectedAccount:${selectedAccount} accountOptions:${accountOptions.value}")
-        if(selectedAccount == null && accountOptions.value.isNotEmpty()){
+        if (selectedAccount == null && accountOptions.value.isNotEmpty()) {
             selectedAccount = accountOptions.value[0]
         }
         println("Launcedasrfda after: selectedAccount:${selectedAccount}")
@@ -150,7 +147,7 @@ fun CreateTxnScreen(
         initial = listOf()
     )
     val categoryChips = remember(expenseCategories, incomeCategories, transactionType) {
-        when(transactionType){
+        when (transactionType) {
             TransactionType.Income -> incomeCategories
             TransactionType.Expense -> expenseCategories
         }
@@ -199,31 +196,54 @@ fun CreateTxnScreen(
                         onCheckedChange = { batchAdd = it })
                     Spacer(modifier = Modifier.weight(1f))
                     val context = LocalContext.current
-                    Button(onClick = {
-                        if (selectedAccount == null) {
-                            //TODO: show error
-                            Toast.makeText(context, "selected account null error", Toast.LENGTH_LONG).show()
-                            return@Button
-                        }
-                        if (amount.toDoubleOrNull() == null) {
-                            //TODO: show error
-                            Toast.makeText(context, "selected amount not good error", Toast.LENGTH_LONG).show()
-                            return@Button
-                        }
+                    Button(
+                        onClick = {
+                            if (selectedAccount == null) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.invalid_account),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                return@Button
+                            }
+                            if (amount.toDoubleOrNull() == null) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.invalid_amount),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                return@Button
+                            }
+                            if (categoryChips.value.isEmpty() || categoryChips.value.getOrNull(
+                                    selectedCategoryIndex
+                                ) == null
+                            ) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.choose_a_category),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                return@Button
+                            }
 
-                        TransactionsOperations.instance.createTransaction(
-                            accountId = selectedAccount!!.id,
-                            type = transactionType,
-                            amount = amount.toDouble().times(100).toLong(),
-                            categoryId = categoryChips.value[selectedCategoryIndex].id,
-                            title = title,
-                            description = note,
-                            dateTime = dateTime
-                        )
-                        if (!batchAdd) {
-                            onGoBack()
+                            TransactionsOperations.instance.createTransaction(
+                                accountId = selectedAccount!!.id,
+                                type = transactionType,
+                                amount = amount.toDouble().times(100).toLong(),
+                                categoryId = categoryChips.value[selectedCategoryIndex].id,
+                                title = title,
+                                description = note,
+                                dateTime = dateTime
+                            )
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.transaction_created), Toast.LENGTH_SHORT
+                            ).show()
+                            if (!batchAdd) {
+                                onGoBack()
+                            }
                         }
-                    }) {
+                    ) {
                         Icon(imageVector = Icons.Default.DoneAll, contentDescription = null)
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(text = stringResource(R.string.done))
@@ -253,7 +273,9 @@ fun CreateTxnScreen(
                 ) {
                     TextField(
                         // The `menuAnchor` modifier must be passed to the text field for correctness.
-                        modifier = Modifier.menuAnchor(),
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
                         value = selectedAccount!!.name,
                         onValueChange = {},
                         readOnly = true,
@@ -362,9 +384,9 @@ fun CreateTxnScreen(
                     }
                 },
                 trailingIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(imageVector = Icons.Default.Calculate, contentDescription = null)
-                    }
+//                    IconButton(onClick = { /*TODO*/ }) {
+//                        Icon(imageVector = Icons.Default.Calculate, contentDescription = null)
+//                    }
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Decimal,
@@ -410,12 +432,43 @@ fun CreateTxnScreen(
                     .height(70.dp)
                     .focusRequester(titleFocusRequester),
             )
-            if(categoryChips.value.isNotEmpty()){
+            if (categoryChips.value.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Category: ${categoryChips.value[selectedCategoryIndex].name}")
+                    Row {
+                        IconButton(onClick = onCreateCategory) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(id = R.string.create_category)
+                            )
+                        }
+                        IconButton(onClick = onGoToCategoriesList) {
+                            Icon(
+                                imageVector = Icons.Default.EditNote,
+                                contentDescription = stringResource(id = R.string.go_to_categories_list_screen)
+                            )
+                        }
+                    }
+                }
                 CategorySelector(
                     categories = categoryChips.value,
                     onCategorySelected = { selectedCategoryIndex = it },
                     selectedCategoryIndex = selectedCategoryIndex
                 )
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = stringResource(id = R.string.no_categories_created))
+                    TextButton(onClick = onCreateCategory) {
+                        Text(text = stringResource(id = R.string.create_category))
+                    }
+                }
             }
             TextField(
                 value = note,

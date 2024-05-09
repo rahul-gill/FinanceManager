@@ -3,11 +3,17 @@ package io.github.gill.rahul.financemanager.db
 import androidx.compose.ui.graphics.Color
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import io.github.gill.rahul.financemanager.db.DateRangeType.Weekly.isInDateRange
 import io.github.gill.rahul.financemanager.models.TransactionType
 import io.github.gill.rahul.financemanager.models.TransactionUiModel
 import io.github.gill.rahul.financemanager.ui.screen.settings.IconsMap
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.TemporalAdjusters.previousOrSame
 
 class TransactionsOperations(
     private val db: Database,
@@ -80,6 +86,52 @@ class TransactionsOperations(
         }
     ).asFlow().mapToList(Dispatchers.IO)
 
+    fun transactionsDateFiltered(
+        dateRangeType: DateRangeType,
+        currentRangeStart: LocalDate
+    ): Flow<List<HeaderListItem>> = getAllTransactions().map { txnList ->
+        val finalList = mutableListOf<HeaderListItem>()
+        var prevDateTime: LocalDateTime? = null
+        val newTxnList = txnList
+            .filter { txn ->
+                txn.dateTime.toLocalDate().isInDateRange(dateRangeType, currentRangeStart)
+            }.sortedWith { first, second ->
+                when {
+                    first.dateTime.year > second.dateTime.year -> 1
+                    first.dateTime.year < second.dateTime.year -> -1
+                    first.dateTime.month > second.dateTime.month -> 1
+                    first.dateTime.month < second.dateTime.month -> -1
+                    else -> 0
+                }
+            }
+        newTxnList.forEach { item ->
+            if (prevDateTime == null || prevDateTime!!.year != item.dateTime.year || prevDateTime!!.month != item.dateTime.month) {
+                finalList.add(HeaderListItem.Header(item.dateTime.toLocalDate()))
+            }
+            finalList.add(HeaderListItem.Item(item))
+            prevDateTime = item.dateTime
+        }
+        finalList
+    }
+
+
+    fun overallIncomeExpenseFiltered(
+        dateRangeType: DateRangeType,
+        currentRangeStart: LocalDate
+    ): Pair<AmountWrapper, AmountWrapper> {
+        var income = AmountWrapper.fromLong(0)
+        var expense = AmountWrapper.fromLong(0)
+        val newTxnList = getAllTransactions().map { txnList ->
+            txnList.filter { txn ->
+                txn.dateTime.toLocalDate().isInDateRange(dateRangeType, currentRangeStart)
+            }.forEach { txn ->
+                if (txn.isExpense) expense += txn.amount
+                else income += txn.amount
+            }
+        }
+        return Pair(income, expense)
+    }
+
     fun updateTransaction() {
         //update
         //change account balance
@@ -87,3 +139,8 @@ class TransactionsOperations(
 }
 
 //TODO: when deleting something its uiCategory should also get deleted
+
+sealed class HeaderListItem {
+    class Header(val value: LocalDate) : HeaderListItem()
+    class Item(val value: TransactionUiModel) : HeaderListItem()
+}

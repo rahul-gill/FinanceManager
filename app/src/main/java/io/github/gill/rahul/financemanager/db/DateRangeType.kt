@@ -1,6 +1,5 @@
-package io.github.gill.rahul.financemanager.ui
+package io.github.gill.rahul.financemanager.db
 
-import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -11,8 +10,6 @@ import wow.app.core.util.DateTimeUtils.monthFormat
 import wow.app.core.util.DateTimeUtils.yearFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjuster
 import java.time.temporal.TemporalAdjusters
 
 sealed class DateRangeType {
@@ -87,4 +84,28 @@ sealed class DateRangeType {
         }
     }
 
+    fun LocalDate.isInDateRange(
+        dateRangeType: DateRangeType,
+        currentRangeStart: LocalDate
+    ): Boolean {
+        return when (dateRangeType) {
+            All -> true
+            is Custom -> {
+                val rangeEnd = currentRangeStart.plusDays(dateRangeType.daysInRange)
+                isBefore(rangeEnd) && (isAfter(currentRangeStart) || this == currentRangeStart)
+            }
+            Daily -> this == currentRangeStart
+            Monthly -> {
+                month == currentRangeStart.month &&
+                        year == currentRangeStart.year
+            }
+            Weekly -> {
+                with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                    .equals(currentRangeStart.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
+            }
+            Yearly -> {
+                year == currentRangeStart.year
+            }
+        }
+    }
 }

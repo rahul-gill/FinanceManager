@@ -12,9 +12,5 @@ Mention how to
 - libs.toml
 
 
-Issues
-- ripple on click of icons doesn't look good
-- navigation and animations
-
-
-- budeget progress on main screen
+TODOS
+- calculator for amounts

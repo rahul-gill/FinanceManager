@@ -14,7 +14,7 @@
            <meta-data
                android:name="wow.app.core.startup.ApplicationContextInitializer"
                android:value="androidx.startup" />
-       </provider>\
+       </provider>
    </application>
 
 </manifest>

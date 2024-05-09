@@ -40,10 +40,18 @@ fun RootNavHost() {
                 goToSettings = { navController.navigate(Screen.Settings) },
                 goToCreateTxn = { navController.navigate(Screen.CreateTxn) },
                 goToCategories = { navController.navigate(Screen.Categories) },
-                goToAccounts = { navController.navigate(Screen.Accounts) }
+                goToAccounts = { navController.navigate(Screen.Accounts) },
+                goToTxnDetails = { navController.navigate(Screen.TxnDetails(it)) }
             )
 
-            Screen.CreateTxn -> CreateTxnScreen(onGoBack = { navController.pop() })
+            Screen.CreateTxn -> {
+                CreateTxnScreen(
+                    onGoBack = { navController.pop() },
+                    onCreateCategory = { navController.navigate(Screen.CreateCategory) },
+                    onGoToCategoriesList = { navController.navigate(Screen.Categories) }
+                )
+            }
+
             Screen.Categories -> CategoriesListScreen(
                 navigateUp = { navController.pop() },
                 onCategoryClick = {},
@@ -96,6 +104,10 @@ fun RootNavHost() {
                     )
                 }
             )
+
+            is Screen.TxnDetails -> {
+                val txnId = screen.txnId
+            }
         }
     }
 }

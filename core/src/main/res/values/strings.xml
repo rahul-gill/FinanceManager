@@ -35,4 +35,15 @@
     <string name="custom_color_scheme_seed">Custom Color Scheme Seed</string>
     <string name="follow_system_colors">Follow System Colors</string>
     <string name="pure_black_background">Pure black background</string>
+
+    <string name="create_category">Create Category</string>
+    <string name="go_to_categories_list_screen">Go to categories list screen</string>
+    <string name="no_categories_created">No categories created</string>
+    <string name="transaction_created">Transaction created</string>
+    <string name="select_custom_date_range">Select custom date range</string>
+    <string name="go_to_previous_time_interval">Go to previous time interval</string>
+    <string name="go_to_next_time_interval">Go to next time interval</string>
+    <string name="invalid_account">Invalid account</string>
+    <string name="invalid_amount">Invalid amount</string>
+    <string name="choose_a_category">Choose a category</string>
 </resources>

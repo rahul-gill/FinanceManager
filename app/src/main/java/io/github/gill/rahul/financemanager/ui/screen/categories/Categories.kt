@@ -160,12 +160,14 @@ fun CategorySelector(
             }
 
         }
-        TextButton(onClick = { showOnlySomeCategories = !showOnlySomeCategories }) {
-            Text(text = if (showOnlySomeCategories) "Show more" else "Show less")
-            Icon(
-                imageVector = if (showOnlySomeCategories) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
-                contentDescription = null
-            )
+        if (categories.size > compactCategoriesCount) {
+            TextButton(onClick = { showOnlySomeCategories = !showOnlySomeCategories }) {
+                Text(text = if (showOnlySomeCategories) "Show more" else "Show less")
+                Icon(
+                    imageVector = if (showOnlySomeCategories) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                    contentDescription = null
+                )
+            }
         }
     }
 }

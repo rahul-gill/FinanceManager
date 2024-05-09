@@ -2,13 +2,18 @@ package io.github.gill.rahul.financemanager.db
 
 @JvmInline
 value class AmountWrapper private constructor(
-    private val amount: Long
-){
+    private val amountInner: Long
+) {
     val doubleValue: Double
-        get() = amount / 100.0
+        get() = amountInner / 100.0
 
     val formattedValue: String
         get() = "%.2f".format(doubleValue)
+
+
+    operator fun plus(other: AmountWrapper): AmountWrapper {
+        return fromLong(this.amountInner + other.amountInner)
+    }
 
     companion object {
 

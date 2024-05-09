@@ -70,6 +70,8 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.material3)
+
+    implementation(libs.lifecycle.runtime.compose)
     implementation(libs.compose.material.icons.extended)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
