@@ -12,5 +12,8 @@ Mention how to
 - libs.toml
 
 
-TODOS
+DO NOW
+- default account setting
+
+DO LATER
 - calculator for amounts

@@ -1,6 +1,7 @@
 package io.github.gill.rahul.financemanager.ui.screen.accounts
 
 import android.os.Build
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -130,57 +132,21 @@ fun AccountsListScreen(
                 ) {
                     itemsIndexed(list, key = { _, item -> item.id }) { index, item ->
                         ReorderableItem(reorderableLazyColumnState, key = item.id) { isDragging ->
-                            val elevation by animateDpAsState(
-                                if (isDragging) 20.dp else 1.dp,
-                                label = "Elevation"
-                            )
-                            ElevatedCard(
-                                elevation = CardDefaults.cardElevation(defaultElevation = elevation),
-                                modifier = Modifier
-                                    .clickable {
-                                        onAccountClick(item.id)
-                                    }
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    modifier = Modifier.padding(
-                                        vertical = 24.dp,
-                                        horizontal = 16.dp
-                                    )
-                                ) {
-                                    Icon(
-                                        modifier = Modifier
-                                            .padding(start = 16.dp)
-                                            .background(
-                                                color = item.color,
-                                                shape = RoundedCornerShape(25)
-                                            )
-                                            .padding(4.dp)
-                                            .size(24.dp),
-                                        painter = run {
-                                            painterResource(id = item.iconRes)
-                                        },
-                                        contentDescription = null,
-                                        tint = getContentColorForBackground(item.color)
-                                    )
-                                    Text(
-                                        text = item.name,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(vertical = 20.dp)
-                                    )
+                            DraggableAccountItem(
+                                isDragging = isDragging,
+                                onAccountClick = { onAccountClick(item.id) },
+                                name = item.name,
+                                color = item.color,
+                                iconRes = item.iconRes,
+                                reorderHandle = {
                                     IconButton(
                                         modifier = Modifier.draggableHandle(
                                             onDragStarted = {
-                                                println("4324232 onDragStarted")
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                                 }
                                             },
                                             onDragStopped = {
-                                                println("4324232 onDragStopped")
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                                 }
@@ -204,11 +170,64 @@ fun AccountsListScreen(
                                         )
                                     }
                                 }
-                            }
+                            )
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun DraggableAccountItem(
+    isDragging: Boolean,
+    onAccountClick: () -> Unit,
+    name: String,
+    color: Color,
+    @DrawableRes
+    iconRes: Int,
+    reorderHandle: @Composable () -> Unit
+){
+    val elevation by animateDpAsState(
+        if (isDragging) 20.dp else 1.dp,
+        label = "Elevation"
+    )
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = elevation),
+        onClick = onAccountClick
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.padding(
+                vertical = 24.dp,
+                horizontal = 16.dp
+            )
+        ) {
+            Icon(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .background(
+                        color = color,
+                        shape = RoundedCornerShape(25)
+                    )
+                    .padding(4.dp)
+                    .size(24.dp),
+                painter = run {
+                    painterResource(id = iconRes)
+                },
+                contentDescription = null,
+                tint = getContentColorForBackground(color)
+            )
+            Text(
+                text = name,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 20.dp)
+            )
+            reorderHandle()
         }
     }
 }
